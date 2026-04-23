@@ -604,22 +604,20 @@ function normalizeOptions(product) {
 
   return result;
 }
+function collectOptionValues(product, position) {
+  var seen = {};
+  var values = [];
 
-  function collectOptionValues(product, position) {
-    var seen = {};
-    var values = [];
+  (product.variants || []).forEach(function (variant) {
+    var value = variant['option' + position];
+    if (value != null && !seen[value]) {
+      seen[value] = true;
+      values.push(String(value));
+    }
+  });
 
-    (product.variants || []).forEach(function (variant) {
-      var value = variant['option' + position];
-      if (value != null && !seen[value]) {
-        seen[value] = true;
-        values.push(String(value));
-      }
-    });
-
-    return values;
-  }
-
+  return values;
+}
   function render(product) {
     selectedOpts = {};
 
