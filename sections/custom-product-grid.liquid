@@ -51,7 +51,7 @@
 </section>
 
 <!-- ── Quick View Modal ───────────────────────────────────── -->
-<div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" hidden>
+<div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" aria-labelledby="cpg-modal-title" hidden>
   <div class="cpg-modal__backdrop" id="cpg-modal-backdrop"></div>
   <div class="cpg-modal__panel">
     <button class="cpg-modal__close" id="cpg-modal-close" aria-label="Close">&#x2715;</button>
@@ -61,36 +61,42 @@
   </div>
 </div>
 
-<div class="cpg-toast" id="cpg-toast"></div>
+<div class="cpg-toast" id="cpg-toast" role="status" aria-live="polite"></div>
 
 <style>
-/* ── Base ────────────────────────────────────────────────── */
-.cpg-section *, .cpg-modal * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── Reset ───────────────────────────────────────────────── */
+.cpg-section *, .cpg-modal * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
+/* ── Section ─────────────────────────────────────────────── */
 .cpg-section {
-  padding: 48px 0 64px;
+  padding: 56px 0 72px;
   background: #fff;
 }
 .cpg-container {
   max-width: 1337px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 .cpg-heading {
-  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  font-size: clamp(1.15rem, 2.5vw, 1.65rem);
   font-weight: 500;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   color: #111;
+  letter-spacing: -0.01em;
 }
 
 /* ── Grid ────────────────────────────────────────────────── */
 .cpg-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 2px;
 }
-@media (max-width: 900px) { .cpg-grid { grid-template-columns: repeat(2,1fr); } }
-@media (max-width: 540px) { .cpg-grid { grid-template-columns: 1fr; gap: 16px; } }
+@media (max-width: 900px) { .cpg-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .cpg-grid { grid-template-columns: 1fr; } }
 
 /* ── Card ────────────────────────────────────────────────── */
 .cpg-card {
@@ -100,88 +106,125 @@
   cursor: pointer;
 }
 .cpg-card--empty { cursor: default; }
+
 .cpg-card__image-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1.07;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .cpg-card__image {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-  transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.cpg-card:hover .cpg-card__image { transform: scale(1.05); }
+.cpg-card:hover .cpg-card__image { transform: scale(1.06); }
+
 .cpg-placeholder-svg { width: 100%; height: 100%; background: #ececec; }
+
 .cpg-card__empty-label {
-  position: absolute; bottom: 10px; left: 50%;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
   transform: translateX(-50%);
-  font-size: 11px; color: #888;
-  background: rgba(255,255,255,0.85);
-  padding: 3px 10px; border-radius: 2px; white-space: nowrap;
+  font-size: 11px;
+  color: #888;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 12px;
+  white-space: nowrap;
 }
+
 .cpg-card__quick-view {
-  position: absolute; bottom: 14px; left: 50%;
-  transform: translateX(-50%) translateY(12px);
-  opacity: 0; white-space: nowrap;
-  padding: 10px 22px;
-  background: rgba(255,255,255,0.96);
-  border: none; border-radius: 2px;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.09em; text-transform: uppercase;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  opacity: 0;
+  white-space: nowrap;
+  padding: 11px 26px;
+  background: rgba(255,255,255,0.97);
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transition: opacity 0.24s ease, transform 0.24s ease;
 }
 .cpg-card:hover .cpg-card__quick-view {
-  opacity: 1; transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
-/* ── Modal shell ─────────────────────────────────────────── */
+/* ── Modal Shell ─────────────────────────────────────────── */
 .cpg-modal {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .cpg-modal[hidden] { display: none; }
+
 .cpg-modal__backdrop {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.45); cursor: pointer;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  cursor: pointer;
+  backdrop-filter: blur(2px);
 }
 .cpg-modal__panel {
-  position: relative; background: #fff;
-  width: min(700px, 95vw);
-  max-height: 92vh; overflow-y: auto;
-  padding: 32px 28px 28px;
+  position: relative;
+  background: #fff;
+  width: min(720px, 96vw);
+  max-height: 94vh;
+  overflow-y: auto;
+  padding: 36px 32px 32px;
   z-index: 1;
-  animation: cpgUp 0.25s ease;
-  border-radius: 2px;
+  animation: cpgUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @keyframes cpgUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(22px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.cpg-modal__close {
-  position: absolute; top: 12px; right: 14px;
-  background: none; border: none;
-  font-size: 18px; cursor: pointer; color: #888;
-  padding: 4px 8px; line-height: 1;
-}
-.cpg-modal__close:hover { color: #000; }
 
-/* ── Modal inner layout — matches screenshot ─────────────── */
+.cpg-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #999;
+  padding: 6px 10px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.cpg-modal__close:hover { color: #111; }
+
+/* ── Modal Inner Layout ──────────────────────────────────── */
 .cpg-modal__inner {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 24px;
+  grid-template-columns: 240px 1fr;
+  gap: 28px;
   align-items: start;
 }
-@media (max-width: 540px) {
-  .cpg-modal__inner { grid-template-columns: 1fr; }
+@media (max-width: 560px) {
+  .cpg-modal__inner {
+    grid-template-columns: 1fr;
+  }
+  .cpg-modal__panel { padding: 28px 20px 24px; }
 }
 
-/* Left: image */
+/* Image column */
+.cpg-modal__img-wrap { flex-shrink: 0; }
 .cpg-modal__img {
   width: 100%;
   aspect-ratio: 3 / 4;
@@ -189,149 +232,245 @@
   display: block;
 }
 .cpg-modal__img-placeholder {
-  width: 100%; aspect-ratio: 3/4;
-  background: #eee; border-radius: 2px;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #eee;
 }
 
-/* Right: info */
-.cpg-modal__info { display: flex; flex-direction: column; gap: 12px; }
+/* Info column */
+.cpg-modal__info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
 .cpg-modal__title {
-  font-size: 1.3rem;
+  font-size: 1.45rem;
   font-weight: 500;
   color: #111;
-  line-height: 1.3;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 .cpg-modal__price {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: #111;
   font-weight: 400;
+  letter-spacing: -0.01em;
 }
 .cpg-modal__desc {
-  font-size: 13.5px;
-  line-height: 1.65;
-  color: #555;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #666;
 }
 
-/* Option label */
+/* ── Option Groups ───────────────────────────────────────── */
+.cpg-opt-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .cpg-opt__label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #333;
-  margin-bottom: 8px;
-  display: block;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-/* Color swatches — horizontal buttons like screenshot */
+/* Color Swatches — tab-style horizontal */
 .cpg-swatch-group {
   display: flex;
   gap: 0;
   border: 1px solid #ddd;
+  width: 100%;
 }
 .cpg-swatch {
   flex: 1;
-  padding: 12px 10px;
+  padding: 13px 10px;
   border: none;
   border-right: 1px solid #ddd;
   background: #fff;
-  font-size: 13.5px;
+  font-size: 13px;
   cursor: pointer;
   text-align: center;
   transition: background 0.15s;
+  color: #333;
   position: relative;
 }
 .cpg-swatch:last-child { border-right: none; }
 .cpg-swatch.active {
   background: #fff;
-  border-bottom: 3px solid #1a56db;
+  font-weight: 600;
+  color: #111;
 }
-.cpg-swatch:hover { background: #f7f7f7; }
+.cpg-swatch.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: #1a56db;
+}
+.cpg-swatch:hover:not(.active) { background: #f5f5f5; }
 
-/* Size dropdown — matches screenshot style */
-.cpg-size-wrap {
-  position: relative;
-}
+/* Size Dropdown */
+.cpg-size-wrap { position: relative; }
 .cpg-size-select {
   width: 100%;
   padding: 14px 44px 14px 16px;
   border: 1px solid #ddd;
   background: #fff;
-  font-size: 14px;
+  font-size: 13.5px;
   color: #333;
   cursor: pointer;
   appearance: none;
+  -webkit-appearance: none;
   border-radius: 0;
+  outline: none;
+  transition: border-color 0.15s;
 }
+.cpg-size-select:focus { border-color: #111; }
 .cpg-size-arrow {
-  position: absolute; right: 16px; top: 50%;
+  position: absolute;
+  right: 16px;
+  top: 50%;
   transform: translateY(-50%);
-  pointer-events: none; color: #555;
-  font-size: 14px;
+  pointer-events: none;
+  color: #555;
+  font-size: 18px;
+  line-height: 1;
 }
 
-/* Generic select fallback (when no named options) */
+/* Generic select fallback */
 .cpg-modal__select {
   width: 100%;
-  padding: 12px 40px 12px 14px;
+  padding: 13px 40px 13px 16px;
   border: 1px solid #ddd;
   border-radius: 0;
-  font-size: 14px;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;
-  appearance: none; cursor: pointer;
+  font-size: 13.5px;
+  background: #fff;
+  color: #333;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  cursor: pointer;
+  outline: none;
 }
+.cpg-modal__select:focus { border-color: #111; }
 
-/* ADD TO CART button — matches screenshot */
+/* ── Quantity ─────────────────────────────────────────────── */
+.cpg-qty-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  width: fit-content;
+  gap: 0;
+}
+.cpg-qty-btn {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.cpg-qty-btn:hover { background: #f5f5f5; color: #111; }
+.cpg-qty-input {
+  width: 48px;
+  height: 40px;
+  border: none;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+  color: #111;
+  background: #fff;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.cpg-qty-input::-webkit-outer-spin-button,
+.cpg-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ── ADD TO CART Button ──────────────────────────────────── */
 .cpg-modal__atc {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
-  padding: 16px 20px;
-  background: #111; color: #fff;
+  padding: 17px 20px;
+  background: #111;
+  color: #fff;
   border: none;
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.18s;
-  margin-top: 4px;
+  transition: background 0.2s;
+  margin-top: 6px;
 }
-.cpg-modal__atc:hover   { background: #333; }
+.cpg-modal__atc:hover   { background: #2a2a2a; }
 .cpg-modal__atc:disabled { background: #aaa; cursor: not-allowed; }
-.cpg-modal__atc-arrow {
-  font-size: 18px; font-weight: 300; line-height: 1;
-}
-.cpg-modal__view {
-  display: block; text-align: center;
-  font-size: 12px; color: #888;
-  text-decoration: underline; text-underline-offset: 2px;
-  margin-top: 8px;
-}
+.cpg-modal__atc-arrow { font-size: 18px; font-weight: 300; line-height: 1; }
 
-/* Loading */
+.cpg-modal__view {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-top: 6px;
+  transition: color 0.15s;
+}
+.cpg-modal__view:hover { color: #111; }
+
+/* ── Loading ─────────────────────────────────────────────── */
 .cpg-modal__loading {
-  display: flex; align-items: center; justify-content: center;
-  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
 }
 .cpg-spinner {
-  width: 32px; height: 32px;
-  border: 3px solid #eee; border-top-color: #222;
-  border-radius: 50%; animation: cpgSpin 0.65s linear infinite;
+  width: 30px;
+  height: 30px;
+  border: 2.5px solid #eee;
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: cpgSpin 0.6s linear infinite;
 }
 @keyframes cpgSpin { to { transform: rotate(360deg); } }
 
-/* Toast */
+/* ── Toast ───────────────────────────────────────────────── */
 .cpg-toast {
-  position: fixed; bottom: 28px; left: 50%;
-  transform: translateX(-50%) translateY(70px);
-  background: #111; color: #fff;
-  padding: 12px 28px; border-radius: 2px;
-  font-size: 13px; font-weight: 500;
-  z-index: 99999; pointer-events: none;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #111;
+  color: #fff;
+  padding: 13px 32px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  z-index: 99999;
+  pointer-events: none;
   white-space: nowrap;
-  transition: transform 0.28s ease;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.cpg-toast.cpg-toast--show { transform: translateX(-50%) translateY(0); }
+.cpg-toast.cpg-toast--show {
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 
 <script>
@@ -347,9 +486,10 @@
   var activeHandle = null;
   var currentProduct = null;
   var selectedOptions = {};
+  var currentQty = 1;
 
   /* ── Modal open / close ──────────────────────────────── */
-  function openModal()  {
+  function openModal() {
     modal.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
   }
@@ -360,12 +500,13 @@
     activeHandle = null;
     currentProduct = null;
     selectedOptions = {};
+    currentQty = 1;
   }
 
   closeBtn.addEventListener('click', closeModal);
   backdrop.addEventListener('click', closeModal);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeModal();
   });
 
   /* ── Fetch product ───────────────────────────────────── */
@@ -376,101 +517,76 @@
     modalBody.innerHTML = '<div class="cpg-modal__loading"><div class="cpg-spinner"></div></div>';
 
     fetch('/products/' + handle + '.js')
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      })
       .then(function (p) {
         currentProduct = p;
         renderModal(p);
       })
       .catch(function () {
-        modalBody.innerHTML = '<p style="padding:32px;text-align:center">Could not load product. <a href="/products/' + handle + '">View page &rarr;</a></p>';
+        modalBody.innerHTML =
+          '<p style="padding:40px;text-align:center;font-size:14px;color:#666">' +
+          'Could not load product. <a href="/products/' + handle + '" style="color:#111">View page &rarr;</a></p>';
       });
   }
 
-  /* ── Render modal matching the screenshot ────────────── */
+  /* ── Render modal ────────────────────────────────────── */
   function renderModal(p) {
-    var imgSrc  = p.featured_image || (p.images && p.images[0]);
+    var imgSrc = p.featured_image || (p.images && p.images[0]);
     var imgHtml = imgSrc
-      ? '<img class="cpg-modal__img" src="' + imgSrc + '" alt="' + esc(p.title) + '" loading="lazy">'
+      ? '<img id="cpg-modal-img" class="cpg-modal__img" src="' + imgSrc + '" alt="' + esc(p.title) + '" loading="eager">'
       : '<div class="cpg-modal__img-placeholder"></div>';
 
     var price = fmtMoney(p.price_min);
     if (p.price_min !== p.price_max) price += ' &ndash; ' + fmtMoney(p.price_max);
 
     var descText = p.description
-      ? p.description.replace(/<[^>]+>/g, '').substring(0, 200) + (p.description.length > 200 ? '\u2026' : '')
+      ? p.description.replace(/<[^>]+>/g, '').substring(0, 220) + (p.description.length > 220 ? '\u2026' : '')
       : '';
     var descHtml = descText ? '<p class="cpg-modal__desc">' + descText + '</p>' : '';
 
-    /* Build option UI */
     var optionsHtml = buildOptions(p);
 
+    var qtyHtml =
+      '<div class="cpg-opt-group">' +
+      '<span class="cpg-opt__label">Quantity</span>' +
+      '<div class="cpg-qty-wrap">' +
+        '<button class="cpg-qty-btn" id="cpg-qty-minus" aria-label="Decrease quantity">&#8722;</button>' +
+        '<input class="cpg-qty-input" id="cpg-qty-input" type="number" value="1" min="1" max="99" aria-label="Quantity">' +
+        '<button class="cpg-qty-btn" id="cpg-qty-plus" aria-label="Increase quantity">&#43;</button>' +
+      '</div>' +
+      '</div>';
+
     modalBody.innerHTML =
-      '<div class="cpg-modal__inner">'
-      + '<div>' + imgHtml + '</div>'
-      + '<div class="cpg-modal__info">'
-        + '<h2 class="cpg-modal__title">' + esc(p.title) + '</h2>'
-        + '<p class="cpg-modal__price">' + price + '</p>'
-        + descHtml
-        + optionsHtml
-        + '<button class="cpg-modal__atc" id="cpg-atc">'
-          + 'ADD TO CART <span class="cpg-modal__atc-arrow">&rarr;</span>'
-          + '</button>'
-        + '<a class="cpg-modal__view" href="/products/' + p.handle + '">View full details</a>'
-      + '</div>'
-      + '</div>';
+      '<div class="cpg-modal__inner">' +
+        '<div class="cpg-modal__img-wrap">' + imgHtml + '</div>' +
+        '<div class="cpg-modal__info">' +
+          '<h2 class="cpg-modal__title" id="cpg-modal-title">' + esc(p.title) + '</h2>' +
+          '<p class="cpg-modal__price" id="cpg-modal-price">' + price + '</p>' +
+          descHtml +
+          optionsHtml +
+          qtyHtml +
+          '<button class="cpg-modal__atc" id="cpg-atc">' +
+            'ADD TO CART <span class="cpg-modal__atc-arrow">&rarr;</span>' +
+          '</button>' +
+          '<a class="cpg-modal__view" href="/products/' + p.handle + '">View full details</a>' +
+        '</div>' +
+      '</div>';
 
-    /* Bind swatch clicks */
-    modalBody.querySelectorAll('.cpg-swatch').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var optName = this.getAttribute('data-opt');
-        var val     = this.getAttribute('data-val');
-        selectedOptions[optName] = val;
-        /* Update active state within that group */
-        modalBody.querySelectorAll('.cpg-swatch[data-opt="' + optName + '"]').forEach(function (b) {
-          b.classList.toggle('active', b.getAttribute('data-val') === val);
-        });
-      });
-    });
-
-    /* Bind size select */
-    var sizeSelect = modalBody.querySelector('.cpg-size-select');
-    if (sizeSelect) {
-      sizeSelect.addEventListener('change', function () {
-        selectedOptions[this.getAttribute('data-opt')] = this.value;
-      });
-    }
-
-    /* Bind generic select */
-    var genSelect = modalBody.querySelector('.cpg-modal__select');
-    if (genSelect) {
-      genSelect.addEventListener('change', function () {
-        selectedOptions['variant'] = this.value;
-      });
-      /* Pre-select first available */
-      var firstOpt = genSelect.querySelector('option:not([disabled])');
-      if (firstOpt) selectedOptions['variant'] = firstOpt.value;
-    }
-
-    /* Bind ATC */
-    document.getElementById('cpg-atc').addEventListener('click', function () {
-      var variantId = resolveVariant(p);
-      if (!variantId) {
-        showToast('Please select your options.');
-        return;
-      }
-      addToCart(variantId, this);
-    });
+    bindOptionEvents(p);
+    bindQuantityEvents();
+    bindATCEvent(p);
   }
 
   /* ── Build option UI ─────────────────────────────────── */
   function buildOptions(p) {
-    /* Single variant with default title — no options needed */
     if (p.variants.length === 1 && p.variants[0].title === 'Default Title') {
       selectedOptions['variant'] = p.variants[0].id;
       return '';
     }
 
-    /* Multiple named options */
     if (p.options && p.options.length > 0 && p.options[0] !== 'Title') {
       var html = '';
       p.options.forEach(function (optName, idx) {
@@ -478,51 +594,165 @@
         var isColor = /colou?r/i.test(optName);
         var isSize  = /size/i.test(optName);
 
-        html += '<div class="cpg-opt-group" style="display:flex;flex-direction:column;gap:0">';
+        html += '<div class="cpg-opt-group">';
         html += '<span class="cpg-opt__label">' + esc(optName) + '</span>';
 
         if (isColor) {
-          /* Color swatches */
-          html += '<div class="cpg-swatch-group">';
+          html += '<div class="cpg-swatch-group" role="group" aria-label="' + esc(optName) + '">';
           values.forEach(function (val, i) {
             var active = i === 0 ? ' active' : '';
             if (i === 0) selectedOptions[optName] = val;
-            html += '<button class="cpg-swatch' + active + '" data-opt="' + esc(optName) + '" data-val="' + esc(val) + '">' + esc(val) + '</button>';
+            html += '<button class="cpg-swatch' + active + '" data-opt="' + esc(optName) + '" data-val="' + esc(val) + '" aria-pressed="' + (i === 0 ? 'true' : 'false') + '">' + esc(val) + '</button>';
           });
           html += '</div>';
         } else if (isSize) {
-          /* Size dropdown */
           html += '<div class="cpg-size-wrap">';
-          html += '<select class="cpg-size-select" data-opt="' + esc(optName) + '">';
+          html += '<select class="cpg-size-select" data-opt="' + esc(optName) + '" aria-label="' + esc(optName) + '">';
           html += '<option value="" disabled selected>Choose your ' + esc(optName.toLowerCase()) + '</option>';
           values.forEach(function (val) {
             html += '<option value="' + esc(val) + '">' + esc(val) + '</option>';
           });
           html += '</select>';
-          html += '<span class="cpg-size-arrow">&#8964;</span>';
+          html += '<span class="cpg-size-arrow" aria-hidden="true">&#8964;</span>';
           html += '</div>';
         } else {
-          /* Generic swatch for other options */
-          html += '<div class="cpg-swatch-group">';
+          html += '<div class="cpg-swatch-group" role="group" aria-label="' + esc(optName) + '">';
           values.forEach(function (val, i) {
             var active = i === 0 ? ' active' : '';
             if (i === 0) selectedOptions[optName] = val;
-            html += '<button class="cpg-swatch' + active + '" data-opt="' + esc(optName) + '" data-val="' + esc(val) + '">' + esc(val) + '</button>';
+            html += '<button class="cpg-swatch' + active + '" data-opt="' + esc(optName) + '" data-val="' + esc(val) + '" aria-pressed="' + (i === 0 ? 'true' : 'false') + '">' + esc(val) + '</button>';
           });
           html += '</div>';
         }
+
         html += '</div>';
       });
       return html;
 
     } else {
-      /* Fallback: flat variant dropdown */
       var opts = p.variants.map(function (v) {
         return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>'
           + esc(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
       }).join('');
-      return '<select class="cpg-modal__select">' + opts + '</select>';
+      return '<div class="cpg-opt-group"><select class="cpg-modal__select">' + opts + '</select></div>';
     }
+  }
+
+  /* ── Bind option events ──────────────────────────────── */
+  function bindOptionEvents(p) {
+    /* Swatches */
+    modalBody.querySelectorAll('.cpg-swatch').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var optName = this.getAttribute('data-opt');
+        var val     = this.getAttribute('data-val');
+        selectedOptions[optName] = val;
+
+        modalBody.querySelectorAll('.cpg-swatch[data-opt="' + optName + '"]').forEach(function (b) {
+          var isActive = b.getAttribute('data-val') === val;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        /* Update image if variant has one */
+        updateVariantImage(p);
+        updatePrice(p);
+      });
+    });
+
+    /* Size select */
+    var sizeSelect = modalBody.querySelector('.cpg-size-select');
+    if (sizeSelect) {
+      sizeSelect.addEventListener('change', function () {
+        selectedOptions[this.getAttribute('data-opt')] = this.value;
+        updatePrice(p);
+      });
+    }
+
+    /* Generic select */
+    var genSelect = modalBody.querySelector('.cpg-modal__select');
+    if (genSelect) {
+      genSelect.addEventListener('change', function () {
+        selectedOptions['variant'] = this.value;
+        updatePrice(p);
+      });
+      var firstOpt = genSelect.querySelector('option:not([disabled])');
+      if (firstOpt) selectedOptions['variant'] = firstOpt.value;
+    }
+  }
+
+  /* ── Bind quantity events ────────────────────────────── */
+  function bindQuantityEvents() {
+    var input = document.getElementById('cpg-qty-input');
+    var minus = document.getElementById('cpg-qty-minus');
+    var plus  = document.getElementById('cpg-qty-plus');
+    if (!input) return;
+
+    minus.addEventListener('click', function () {
+      if (currentQty > 1) { currentQty--; input.value = currentQty; }
+    });
+    plus.addEventListener('click', function () {
+      if (currentQty < 99) { currentQty++; input.value = currentQty; }
+    });
+    input.addEventListener('change', function () {
+      var v = parseInt(this.value, 10);
+      currentQty = isNaN(v) || v < 1 ? 1 : Math.min(v, 99);
+      this.value = currentQty;
+    });
+  }
+
+  /* ── Bind ATC event ──────────────────────────────────── */
+  function bindATCEvent(p) {
+    var btn = document.getElementById('cpg-atc');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var variantId = resolveVariant(p);
+      if (!variantId) {
+        showToast('Please select your options.');
+        return;
+      }
+      addToCart(variantId, this, currentQty);
+    });
+  }
+
+  /* ── Update variant image ────────────────────────────── */
+  function updateVariantImage(p) {
+    var variant = findMatchingVariant(p);
+    if (!variant || !variant.featured_image) return;
+    var img = document.getElementById('cpg-modal-img');
+    if (img) {
+      img.style.opacity = '0';
+      img.src = variant.featured_image.src;
+      img.onload = function () {
+        img.style.transition = 'opacity 0.3s';
+        img.style.opacity = '1';
+      };
+    }
+  }
+
+  /* ── Update price display ────────────────────────────── */
+  function updatePrice(p) {
+    var variant = findMatchingVariant(p);
+    var priceEl = document.getElementById('cpg-modal-price');
+    if (!priceEl) return;
+    if (variant) {
+      var priceHtml = fmtMoney(variant.price);
+      if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+        priceHtml = '<span style="text-decoration:line-through;color:#aaa;margin-right:8px">' +
+          fmtMoney(variant.compare_at_price) + '</span>' + priceHtml;
+      }
+      priceEl.innerHTML = priceHtml;
+    }
+  }
+
+  /* ── Find matching variant ───────────────────────────── */
+  function findMatchingVariant(p) {
+    if (!p || !p.options) return null;
+    return p.variants.find(function (v) {
+      return p.options.every(function (optName, idx) {
+        var chosen = selectedOptions[optName];
+        return !chosen || v['option' + (idx + 1)] === chosen;
+      });
+    }) || null;
   }
 
   function getOptionValues(p, idx) {
@@ -534,32 +764,28 @@
     return vals;
   }
 
-  /* ── Resolve which variant matches selected options ──── */
+  /* ── Resolve variant ─────────────────────────────────── */
   function resolveVariant(p) {
-    /* Direct variant id stored */
     if (selectedOptions['variant']) return selectedOptions['variant'];
     if (p.variants.length === 1) return p.variants[0].id;
-
-    /* Match by options */
-    var match = p.variants.find(function (v) {
-      return p.options.every(function (optName, idx) {
-        var chosen = selectedOptions[optName];
-        return !chosen || v['option' + (idx + 1)] === chosen;
-      });
-    });
+    var match = findMatchingVariant(p);
     return match ? match.id : (p.variants[0] ? p.variants[0].id : null);
   }
 
   /* ── Add to cart ─────────────────────────────────────── */
-  function addToCart(variantId, btn) {
+  function addToCart(variantId, btn, qty) {
     btn.disabled = true;
     btn.innerHTML = 'Adding\u2026';
+
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: parseInt(variantId, 10), quantity: 1 })
+      body: JSON.stringify({ id: parseInt(variantId, 10), quantity: qty || 1 })
     })
-    .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
+    .then(function (r) {
+      if (!r.ok) throw new Error('err');
+      return r.json();
+    })
     .then(function () {
       btn.innerHTML = '\u2713 Added!';
       showToast('Added to cart \u2713');
@@ -567,7 +793,7 @@
       setTimeout(function () {
         btn.disabled = false;
         btn.innerHTML = 'ADD TO CART <span class="cpg-modal__atc-arrow">&rarr;</span>';
-      }, 2200);
+      }, 2400);
     })
     .catch(function () {
       btn.disabled = false;
@@ -576,13 +802,16 @@
     });
   }
 
-  /* ── Refresh cart count in header ────────────────────── */
+  /* ── Refresh cart count ──────────────────────────────── */
   function refreshCartCount() {
-    fetch('/cart.js').then(function (r) { return r.json(); }).then(function (c) {
-      document.querySelectorAll('[data-cart-count],.cart-count,.cart__count,.header__cart-count,.cart-link__bubble-num').forEach(function (el) {
-        el.textContent = c.item_count;
-      });
-    }).catch(function () {});
+    fetch('/cart.js')
+      .then(function (r) { return r.json(); })
+      .then(function (c) {
+        document.querySelectorAll(
+          '[data-cart-count],.cart-count,.cart__count,.header__cart-count,.cart-link__bubble-num'
+        ).forEach(function (el) { el.textContent = c.item_count; });
+      })
+      .catch(function () {});
   }
 
   /* ── Toast ───────────────────────────────────────────── */
@@ -590,18 +819,27 @@
     toast.textContent = msg;
     toast.classList.add('cpg-toast--show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { toast.classList.remove('cpg-toast--show'); }, 2800);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove('cpg-toast--show');
+    }, 2800);
   }
 
   /* ── Helpers ─────────────────────────────────────────── */
   function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
   function fmtMoney(cents) {
-    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: '{{ shop.currency }}' });
+    return (cents / 100).toLocaleString('en-US', {
+      style: 'currency',
+      currency: '{{ shop.currency }}'
+    });
   }
 
-  /* ── Delegated click on Quick View ───────────────────── */
+  /* ── Delegated click on Quick View buttons ───────────── */
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('.cpg-card__quick-view');
     if (!btn) return;
