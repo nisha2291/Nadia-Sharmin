@@ -1,88 +1,550 @@
-<section class="product-grid">
-  <div class="page-width">
-    
-    <h2 class="grid-heading">
-      {{ section.settings.heading }}
-    </h2>
+<section id="custom-product-grid-{{ section.id }}" class="custom-product-grid-section">
+  <div class="custom-product-grid page-width">
+    <h2 class="custom-product-grid__heading">{{ section.settings.heading }}</h2>
 
-    <div class="grid-container">
+    <div class="custom-product-grid__items">
       {% for block in section.blocks %}
         {% assign product = block.settings.product %}
-
         {% if product != blank %}
-          <div class="grid-item" data-product-id="{{ product.id }}">
+          <article class="custom-product-grid__item" {{ block.shopify_attributes }}>
+            <div class="custom-product-grid__image-wrap">
+              <img
+                class="custom-product-grid__image"
+                src="{{ product.featured_image | image_url: width: 900 }}"
+                alt="{{ product.title | escape }}"
+                width="600"
+                height="700"
+                loading="lazy"
+              >
 
-            <img 
-              src="{{ product.featured_image | image_url: width: 600 }}" 
-              alt="{{ product.title }}"
-            >
+              <button
+                type="button"
+                class="custom-product-grid__plus"
+                data-open-popup
+                data-product-handle="{{ product.handle }}"
+                aria-label="Open {{ product.title | escape }}"
+              >
+                +
+              </button>
+            </div>
 
-            <button 
-              class="grid-plus" 
-              data-handle="{{ product.handle }}"
-            >
-              +
-            </button>
-
-          </div>
+            <script type="application/json" class="custom-product-grid__product-json">
+              {{ product | json }}
+            </script>
+          </article>
         {% endif %}
       {% endfor %}
     </div>
+  </div>
 
+  <div class="custom-product-popup" data-popup hidden>
+    <div class="custom-product-popup__overlay" data-close-popup></div>
+
+    <div class="custom-product-popup__dialog" role="dialog" aria-modal="true" aria-label="Product details popup">
+      <button type="button" class="custom-product-popup__close" data-close-popup aria-label="Close popup">
+        ×
+      </button>
+
+      <div class="custom-product-popup__top">
+        <div class="custom-product-popup__media">
+          <img class="custom-product-popup__image" src="" alt="">
+        </div>
+
+        <div class="custom-product-popup__info">
+          <h3 class="custom-product-popup__title"></h3>
+          <div class="custom-product-popup__price"></div>
+          <div class="custom-product-popup__description"></div>
+        </div>
+      </div>
+
+      <div class="custom-product-popup__options" data-popup-options></div>
+
+      <button type="button" class="custom-product-popup__add" data-add-to-cart>
+        <span>ADD TO CART</span>
+        <span class="custom-product-popup__arrow">→</span>
+      </button>
+
+      <div class="custom-product-popup__message" data-popup-message></div>
+    </div>
   </div>
 </section>
 
 <style>
-.product-grid {
-  padding: 80px 40px;
-}
-
-.grid-heading {
-  font-size: 28px;
-  margin-bottom: 40px;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.grid-item {
-  position: relative;
-  overflow: hidden;
-}
-
-.grid-item img {
-  width: 100%;
-  display: block;
-}
-
-.grid-plus {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: white;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.grid-plus:hover {
-  background: black;
-  color: white;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .grid-container {
-    grid-template-columns: 1fr;
+  .custom-product-grid-section {
+    background: #efefef;
+    padding: 72px 0 96px;
   }
-}
+
+  .custom-product-grid__heading {
+    margin: 0 0 32px;
+    font-size: 28px;
+    line-height: 1.2;
+    color: #111;
+    font-weight: 400;
+  }
+
+  .custom-product-grid__items {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .custom-product-grid__item {
+    position: relative;
+  }
+
+  .custom-product-grid__image-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #ddd;
+  }
+
+  .custom-product-grid__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 0.82;
+    object-fit: cover;
+  }
+
+  .custom-product-grid__plus {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .custom-product-grid__plus:hover {
+    background: #111;
+    color: #fff;
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .custom-product-popup[hidden] {
+    display: none;
+  }
+
+  .custom-product-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+  }
+
+  .custom-product-popup__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  .custom-product-popup__dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(92vw, 420px);
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  }
+
+  .custom-product-popup__close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    border: none;
+    background: transparent;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    color: #111;
+  }
+
+  .custom-product-popup__top {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .custom-product-popup__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 0.8;
+    object-fit: cover;
+  }
+
+  .custom-product-popup__title {
+    margin: 0 0 10px;
+    font-size: 20px;
+    line-height: 1.2;
+    color: #111;
+  }
+
+  .custom-product-popup__price {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #111;
+  }
+
+  .custom-product-popup__description {
+    font-size: 14px;
+    line-height: 1.45;
+    color: #333;
+  }
+
+  .custom-product-popup__description p {
+    margin: 0;
+  }
+
+  .custom-product-popup__option {
+    margin-bottom: 16px;
+  }
+
+  .custom-product-popup__option-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #111;
+  }
+
+  .custom-product-popup__option-values {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .custom-product-popup__option-button {
+    border: 1px solid #111;
+    background: #fff;
+    color: #111;
+    min-width: 88px;
+    min-height: 42px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .custom-product-popup__option-button.is-active {
+    background: #111;
+    color: #fff;
+  }
+
+  .custom-product-popup__option-select {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid #111;
+    background: #fff;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  .custom-product-popup__add {
+    width: 100%;
+    min-height: 54px;
+    border: none;
+    background: #000;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+
+  .custom-product-popup__arrow {
+    transition: transform 0.25s ease;
+  }
+
+  .custom-product-popup__add:hover .custom-product-popup__arrow {
+    transform: translateX(6px);
+  }
+
+  .custom-product-popup__message {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #111;
+  }
+
+  @media screen and (max-width: 989px) {
+    .custom-product-grid__items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .custom-product-grid-section {
+      padding: 48px 0 64px;
+    }
+
+    .custom-product-grid__heading {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .custom-product-grid__items {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .custom-product-popup__top {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
+
+<script>
+  (function () {
+    var sectionRoot = document.getElementById('custom-product-grid-{{ section.id }}');
+    if (!sectionRoot) return;
+
+    var popup = sectionRoot.querySelector('[data-popup]');
+    var popupImage = popup.querySelector('.custom-product-popup__image');
+    var popupTitle = popup.querySelector('.custom-product-popup__title');
+    var popupPrice = popup.querySelector('.custom-product-popup__price');
+    var popupDescription = popup.querySelector('.custom-product-popup__description');
+    var popupOptions = popup.querySelector('[data-popup-options]');
+    var popupMessage = popup.querySelector('[data-popup-message]');
+    var addToCartButton = popup.querySelector('[data-add-to-cart]');
+
+    var bonusProductHandle = {{ section.settings.bonus_product.handle | json }};
+    var currentProduct = null;
+    var selectedOptions = {};
+
+    function formatMoney(cents) {
+      if (window.Shopify && typeof Shopify.formatMoney === 'function') {
+        return Shopify.formatMoney(cents);
+      }
+      return (cents / 100).toFixed(2);
+    }
+
+    function openPopup(product) {
+      currentProduct = product;
+      selectedOptions = {};
+
+      if (product.options_with_values && product.options_with_values.length) {
+        product.options_with_values.forEach(function (option, index) {
+          selectedOptions['option' + (index + 1)] = option.values[0];
+        });
+      }
+
+      popupImage.src = product.featured_image;
+      popupImage.alt = product.title;
+      popupTitle.textContent = product.title;
+      popupPrice.textContent = formatMoney(product.price);
+      popupDescription.innerHTML = product.description || '';
+      popupMessage.textContent = '';
+
+      renderOptions(product);
+      popup.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePopup() {
+      popup.hidden = true;
+      document.body.style.overflow = '';
+      currentProduct = null;
+      popupMessage.textContent = '';
+    }
+
+    function renderOptions(product) {
+      popupOptions.innerHTML = '';
+
+      if (!product.options_with_values || !product.options_with_values.length) return;
+
+      product.options_with_values.forEach(function (option, index) {
+        var optionNumber = index + 1;
+        var optionKey = 'option' + optionNumber;
+
+        var optionWrap = document.createElement('div');
+        optionWrap.className = 'custom-product-popup__option';
+
+        var label = document.createElement('label');
+        label.className = 'custom-product-popup__option-label';
+        label.textContent = option.name;
+        optionWrap.appendChild(label);
+
+        if (option.name.toLowerCase() === 'size') {
+          var select = document.createElement('select');
+          select.className = 'custom-product-popup__option-select';
+          select.setAttribute('data-option-key', optionKey);
+
+          option.values.forEach(function (value) {
+            var optionElement = document.createElement('option');
+            optionElement.value = value;
+            optionElement.textContent = value;
+            if (selectedOptions[optionKey] === value) {
+              optionElement.selected = true;
+            }
+            select.appendChild(optionElement);
+          });
+
+          select.addEventListener('change', function (event) {
+            selectedOptions[optionKey] = event.target.value;
+          });
+
+          optionWrap.appendChild(select);
+        } else {
+          var valuesWrap = document.createElement('div');
+          valuesWrap.className = 'custom-product-popup__option-values';
+
+          option.values.forEach(function (value) {
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'custom-product-popup__option-button';
+            button.textContent = value;
+            button.setAttribute('data-option-key', optionKey);
+            button.setAttribute('data-option-value', value);
+
+            if (selectedOptions[optionKey] === value) {
+              button.classList.add('is-active');
+            }
+
+            button.addEventListener('click', function () {
+              selectedOptions[optionKey] = value;
+
+              valuesWrap.querySelectorAll('.custom-product-popup__option-button').forEach(function (btn) {
+                btn.classList.remove('is-active');
+              });
+
+              button.classList.add('is-active');
+            });
+
+            valuesWrap.appendChild(button);
+          });
+
+          optionWrap.appendChild(valuesWrap);
+        }
+
+        popupOptions.appendChild(optionWrap);
+      });
+    }
+
+    function getSelectedVariant(product) {
+      if (!product.variants || !product.variants.length) return null;
+
+      return product.variants.find(function (variant) {
+        return variant.options.every(function (optionValue, index) {
+          return optionValue === selectedOptions['option' + (index + 1)];
+        });
+      });
+    }
+
+    function shouldAddBonusProduct() {
+      var values = Object.keys(selectedOptions).map(function (key) {
+        return selectedOptions[key];
+      });
+
+      return values.indexOf('Black') !== -1 && values.indexOf('Medium') !== -1;
+    }
+
+    function addBonusProduct() {
+      if (!bonusProductHandle) return Promise.resolve();
+
+      if (!shouldAddBonusProduct()) return Promise.resolve();
+
+      return fetch('/products/' + bonusProductHandle + '.js')
+        .then(function (response) { return response.json(); })
+        .then(function (bonusProduct) {
+          if (!bonusProduct || !bonusProduct.variants || !bonusProduct.variants.length) return;
+
+          var variant = bonusProduct.variants.find(function (item) {
+            return item.available;
+          }) || bonusProduct.variants[0];
+
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              id: variant.id,
+              quantity: 1
+            })
+          });
+        });
+    }
+
+    function addCurrentProductToCart() {
+      if (!currentProduct) return;
+
+      var variant = getSelectedVariant(currentProduct);
+
+      if (!variant) {
+        popupMessage.textContent = 'Please select valid options.';
+        return;
+      }
+
+      popupMessage.textContent = 'Adding to cart...';
+      addToCartButton.disabled = true;
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          id: variant.id,
+          quantity: 1
+        })
+      })
+        .then(function () {
+          return addBonusProduct();
+        })
+        .then(function () {
+          popupMessage.textContent = 'Added to cart successfully.';
+          setTimeout(function () {
+            window.location.href = '/cart';
+          }, 500);
+        })
+        .catch(function () {
+          popupMessage.textContent = 'Something went wrong. Please try again.';
+        })
+        .finally(function () {
+          addToCartButton.disabled = false;
+        });
+    }
+
+    sectionRoot.querySelectorAll('.custom-product-grid__item').forEach(function (item) {
+      var jsonTag = item.querySelector('.custom-product-grid__product-json');
+      var openButton = item.querySelector('[data-open-popup]');
+
+      if (!jsonTag || !openButton) return;
+
+      var productData = JSON.parse(jsonTag.textContent);
+
+      openButton.addEventListener('click', function () {
+        openPopup(productData);
+      });
+    });
+
+    popup.querySelectorAll('[data-close-popup]').forEach(function (element) {
+      element.addEventListener('click', closePopup);
+    });
+
+    addToCartButton.addEventListener('click', addCurrentProductToCart);
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !popup.hidden) {
+        closePopup();
+      }
+    });
+  })();
+</script>
 
 {% schema %}
 {
@@ -93,11 +555,16 @@
       "id": "heading",
       "label": "Heading",
       "default": "Tisso vision in the wild"
+    },
+    {
+      "type": "product",
+      "id": "bonus_product",
+      "label": "Bonus product for Black + Medium rule"
     }
   ],
   "blocks": [
     {
-      "type": "product",
+      "type": "product_card",
       "name": "Product",
       "settings": [
         {
@@ -111,7 +578,15 @@
   "max_blocks": 6,
   "presets": [
     {
-      "name": "Custom Product Grid"
+      "name": "Custom Product Grid",
+      "blocks": [
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" }
+      ]
     }
   ]
 }
