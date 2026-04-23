@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "banner": {
+      "type": "custom-gift-banner",
+      "settings": {
+        "brand_text": "TISSO VISION",
+        "top_message": "Find the ideal gift for your loved ones.",
+        "button_label": "CHOOSE GIFT",
+        "heading": "The Gift Guide",
+        "cta_label": "SHOP NOW",
+        "bottom_note": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+      }
+    },
+    "grid": {
+      "type": "custom-product-grid",
+      "settings": {
+        "heading": "Tisso vision in the wild"
+      }
+    }
+  },
+  "order": ["banner", "grid"]
+}

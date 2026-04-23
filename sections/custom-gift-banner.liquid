@@ -1,0 +1,266 @@
+<section id="gift-banner-{{ section.id }}" class="gift-banner">
+  <div class="gift-banner__topbar">
+    <div class="gift-banner__brand">{{ section.settings.brand_text }}</div>
+    <div class="gift-banner__message">{{ section.settings.top_message }}</div>
+    <a href="{{ section.settings.button_link }}" class="gift-banner__top-btn">
+      <span>{{ section.settings.button_label }}</span>
+      <span class="gift-banner__arrow">→</span>
+    </a>
+  </div>
+
+  <div class="gift-banner__hero" style="background-image: url({{ section.settings.bg_image | image_url: width: 2000 }});">
+    <div class="gift-banner__content">
+      <h1 class="gift-banner__title">{{ section.settings.heading }}</h1>
+      <div class="gift-banner__desc">{{ section.settings.description }}</div>
+
+      <a href="{{ section.settings.cta_link }}" class="gift-banner__cta">
+        <span>{{ section.settings.cta_label }}</span>
+        <span class="gift-banner__arrow">→</span>
+      </a>
+    </div>
+
+    <div class="gift-banner__bottom-note">
+      {{ section.settings.bottom_note }}
+    </div>
+  </div>
+</section>
+
+<style>
+  .gift-banner {
+    background: #efefef;
+  }
+
+  .gift-banner__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 14px 48px;
+    background: #ffffff;
+  }
+
+  .gift-banner__brand {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #000;
+  }
+
+  .gift-banner__message {
+    font-size: 16px;
+    color: #111;
+    text-align: center;
+    flex: 1;
+  }
+
+  .gift-banner__top-btn,
+  .gift-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-decoration: none;
+    border: 1px solid #000;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .gift-banner__top-btn {
+    background: #f2e94e;
+    color: #000;
+    min-height: 52px;
+    padding: 0 22px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .gift-banner__cta {
+    background: #000;
+    color: #fff;
+    min-height: 56px;
+    padding: 0 28px;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 32px;
+  }
+
+  .gift-banner__top-btn .gift-banner__arrow,
+  .gift-banner__cta .gift-banner__arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .gift-banner__top-btn:hover,
+  .gift-banner__cta:hover {
+    transform: translateY(-1px);
+  }
+
+  .gift-banner__top-btn:hover .gift-banner__arrow,
+  .gift-banner__cta:hover .gift-banner__arrow {
+    transform: translateX(6px);
+  }
+
+  .gift-banner__hero {
+    min-height: 780px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 80px 64px 100px;
+  }
+
+  .gift-banner__content {
+    max-width: 540px;
+  }
+
+  .gift-banner__title {
+    margin: 0 0 24px;
+    font-size: 88px;
+    line-height: 0.95;
+    font-weight: 600;
+    color: #000;
+  }
+
+  .gift-banner__desc {
+    max-width: 470px;
+    font-size: 20px;
+    line-height: 1.5;
+    color: #111;
+  }
+
+  .gift-banner__bottom-note {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    line-height: 1.2;
+    color: #111;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 989px) {
+    .gift-banner__topbar {
+      flex-direction: column;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .gift-banner__hero {
+      min-height: auto;
+      padding: 56px 20px 72px;
+      background-position: center;
+    }
+
+    .gift-banner__content {
+      max-width: 100%;
+    }
+
+    .gift-banner__title {
+      font-size: 52px;
+    }
+
+    .gift-banner__desc {
+      font-size: 18px;
+    }
+
+    .gift-banner__bottom-note {
+      position: static;
+      transform: none;
+      margin-top: 36px;
+      white-space: normal;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .gift-banner__title {
+      font-size: 40px;
+    }
+
+    .gift-banner__desc {
+      font-size: 16px;
+    }
+
+    .gift-banner__top-btn,
+    .gift-banner__cta {
+      width: 100%;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Custom Gift Banner",
+  "tag": "section",
+  "class": "section-custom-gift-banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "brand_text",
+      "label": "Brand text",
+      "default": "TISSO VISION"
+    },
+    {
+      "type": "text",
+      "id": "top_message",
+      "label": "Top message",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Top button label",
+      "default": "CHOOSE GIFT"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Top button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "text",
+      "id": "bottom_note",
+      "label": "Bottom note",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Gift Banner"
+    }
+  ]
+}
+{% endschema %}
