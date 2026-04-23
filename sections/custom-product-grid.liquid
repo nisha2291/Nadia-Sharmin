@@ -553,7 +553,7 @@
 
   closeBtn.addEventListener('click', close);
   backdrop.addEventListener('click', close);
-  document.addEventListener('keydown', function(e) {
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') close();
   });
 
@@ -564,107 +564,145 @@
     body.innerHTML = '<div class="cpg-loading"><div class="cpg-spinner"></div></div>';
 
     fetch('/products/' + handle + '.js')
-      .then(function(r) {
+      .then(function (r) {
         if (!r.ok) throw r.status;
         return r.json();
       })
-      .then(function(p) {
-        currentProduct = p;
-        render(p);
+      .then(function (product) {
+        currentProduct = product;
+        render(product);
       })
-      .catch(function() {
+      .catch(function () {
         body.innerHTML = '<p style="padding:24px;text-align:center">Could not load product. <a href="/products/' + handle + '">View page &rarr;</a></p>';
       });
   }
 
-  function render(p) {
-    selectedOpts = {};
+  function normalizeOptions(product) {
+    var result = [];
 
-    var imgSrc = p.featured_image || (p.images && p.images[0]);
-    var imgHtml = imgSrc
-      ? '<img class="cpg-card-top__img" src="' + imgSrc + '" alt="' + x(p.title) + '">'
-      : '<div class="cpg-card-top__img-placeholder"></div>';
-
-    var price = money(p.price_min);
-    if (p.price_min !== p.price_max) {
-      price += ' \u2013 ' + money(p.price_max);
+    if (Array.isArray(product.options_with_values) && product.options_with_values.length) {
+      product.options_with_values.forEach(function (opt) {
+        result.push({
+          name: typeof opt.name === 'string' ? opt.name : String(opt.name || ''),
+          values: Array.isArray(opt.values) ? opt.values.map(String) : []
+        });
+      });
+      return result;
     }
 
-    var desc = p.description
-      ? p.description.replace(/<[^>]+>/g, '').substring(0, 160) + (p.description.length > 160 ? '\u2026' : '')
-      : '';
-
-    /* ── Separate options: colour first, size last, others in between ── */
-    var colorOpt  = null;
-    var sizeOpt   = null;
-    var otherOpts = [];
-
-    var hasRealOptions = p.options && !(p.options.length === 1 && p.options[0] === 'Title');
-
-    if (hasRealOptions) {
-      p.options.forEach(function(o) {
-        /* o is a plain string from the /products/<handle>.js API */
-        if (/colou?r/i.test(o))  colorOpt = o;
-        else if (/size/i.test(o)) sizeOpt  = o;
-        else                      otherOpts.push(o);
+    if (Array.isArray(product.options) && product.options.length) {
+      product.options.forEach(function (optName, index) {
+        var safeName = typeof optName === 'string' ? optName : String(optName && optName.name ? optName.name : '');
+        result.push({
+          name: safeName,
+          values: collectOptionValues(product, index + 1)
+        });
       });
     }
 
-    var optsHtml = '';
+    return result;
+  }
 
-    /* 1. Colour swatches — FIRST */
-    if (colorOpt) {
-      var colorVals = optVals(p, colorOpt);
-      selectedOpts[colorOpt] = colorVals[0];
+  function collectOptionValues(product, position) {
+    var seen = {};
+    var values = [];
 
-      optsHtml += buildSwatchBlock(colorOpt, colorVals, true);
-    }
-
-    /* 2. Any other non-size, non-colour options */
-    otherOpts.forEach(function(optName) {
-      var vals = optVals(p, optName);
-      selectedOpts[optName] = vals[0];
-      optsHtml += buildSwatchBlock(optName, vals, true);
+    (product.variants || []).forEach(function (variant) {
+      var value = variant['option' + position];
+      if (value != null && !seen[value]) {
+        seen[value] = true;
+        values.push(String(value));
+      }
     });
 
-    /* 3. Size dropdown — LAST */
-    if (sizeOpt) {
-      var sizeVals = optVals(p, sizeOpt);
+    return values;
+  }
 
+  function render(product) {
+    selectedOpts = {};
+
+    var imgSrc = product.featured_image || (product.images && product.images[0]);
+    var imgHtml = imgSrc
+      ? '<img class="cpg-card-top__img" src="' + escapeHtml(imgSrc) + '" alt="' + escapeHtml(product.title) + '">'
+      : '<div class="cpg-card-top__img-placeholder"></div>';
+
+    var price = money(product.price_min);
+    if (product.price_min !== product.price_max) {
+      price += ' – ' + money(product.price_max);
+    }
+
+    var desc = product.description
+      ? product.description.replace(/<[^>]+>/g, '').substring(0, 160) + (product.description.length > 160 ? '…' : '')
+      : '';
+
+    var normalizedOptions = normalizeOptions(product);
+
+    var colorOpt = null;
+    var sizeOpt = null;
+    var otherOpts = [];
+
+    normalizedOptions.forEach(function (opt) {
+      if (/colou?r/i.test(opt.name)) {
+        colorOpt = opt;
+      } else if (/size/i.test(opt.name)) {
+        sizeOpt = opt;
+      } else {
+        otherOpts.push(opt);
+      }
+    });
+
+    var optsHtml = '';
+
+    /* 1. COLOR FIRST */
+    if (colorOpt && colorOpt.values.length) {
+      selectedOpts[colorOpt.name] = colorOpt.values[0];
+      optsHtml += buildSwatchBlock(colorOpt.name, colorOpt.values, true);
+    }
+
+    /* 2. OTHER NON-SIZE OPTIONS */
+    otherOpts.forEach(function (opt) {
+      if (!opt.values.length) return;
+      selectedOpts[opt.name] = opt.values[0];
+      optsHtml += buildSwatchBlock(opt.name, opt.values, true);
+    });
+
+    /* 3. SIZE LAST AS DROPDOWN */
+    if (sizeOpt && sizeOpt.values.length) {
       optsHtml += '<div class="cpg-opt">';
-      optsHtml += '<span class="cpg-opt__name">' + x(sizeOpt) + '</span>';
+      optsHtml += '<span class="cpg-opt__name">' + escapeHtml(sizeOpt.name) + '</span>';
       optsHtml += '<div class="cpg-size-wrap">';
-      optsHtml += '<select class="cpg-size-select" id="cpg-size-sel" data-opt="' + x(sizeOpt) + '">';
+      optsHtml += '<select class="cpg-size-select" id="cpg-size-sel" data-opt="' + escapeHtml(sizeOpt.name) + '">';
       optsHtml += '<option value="" disabled selected>Choose your size</option>';
-      sizeVals.forEach(function(v) {
-        optsHtml += '<option value="' + x(v) + '">' + x(v) + '</option>';
+      sizeOpt.values.forEach(function (value) {
+        optsHtml += '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</option>';
       });
       optsHtml += '</select>';
       optsHtml += '<span class="cpg-size-chevron">&#8964;</span>';
       optsHtml += '</div></div>';
     }
 
-    /* Fallback: product has variants but no named option groups */
     var fallbackHtml = '';
-    if (!colorOpt && !sizeOpt && otherOpts.length === 0 && p.variants.length > 1) {
-      var varOpts = p.variants.map(function(v) {
-        return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>' + x(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
+    if (!colorOpt && !sizeOpt && otherOpts.length === 0 && product.variants.length > 1) {
+      var varOpts = product.variants.map(function (variant) {
+        return '<option value="' + variant.id + '"' + (variant.available ? '' : ' disabled') + '>' +
+          escapeHtml(variant.title) + (variant.available ? '' : ' — Sold out') +
+          '</option>';
       }).join('');
       fallbackHtml = '<div class="cpg-opt"><select class="cpg-size-select" id="cpg-var-sel">' + varOpts + '</select></div>';
-      selectedOpts._variant = p.variants[0].id;
+      selectedOpts._variant = product.variants[0].id;
     }
 
-    if (p.variants.length === 1) {
-      selectedOpts._variant = p.variants[0].id;
+    if (product.variants.length === 1) {
+      selectedOpts._variant = product.variants[0].id;
     }
 
     body.innerHTML =
       '<div class="cpg-card-top">' +
         '<div>' + imgHtml + '</div>' +
         '<div class="cpg-card-top__info">' +
-          '<p class="cpg-card-top__title">' + x(p.title) + '</p>' +
+          '<p class="cpg-card-top__title">' + escapeHtml(product.title) + '</p>' +
           '<p class="cpg-card-top__price">' + price + '</p>' +
-          (desc ? '<p class="cpg-card-top__desc">' + desc + '</p>' : '') +
+          (desc ? '<p class="cpg-card-top__desc">' + escapeHtml(desc) + '</p>' : '') +
         '</div>' +
       '</div>' +
       optsHtml +
@@ -674,151 +712,143 @@
         '<span class="cpg-atc-btn__arrow">&rarr;</span>' +
       '</button>';
 
-    /* Bind swatch clicks */
-    body.querySelectorAll('.cpg-swatch').forEach(function(btn) {
-      btn.addEventListener('click', function() {
+    body.querySelectorAll('.cpg-swatch').forEach(function (btn) {
+      btn.addEventListener('click', function () {
         var opt = this.getAttribute('data-opt');
         var val = this.getAttribute('data-val');
         selectedOpts[opt] = val;
 
-        body.querySelectorAll('.cpg-swatch[data-opt="' + opt + '"]').forEach(function(b) {
+        body.querySelectorAll('.cpg-swatch[data-opt="' + opt + '"]').forEach(function (b) {
           b.classList.toggle('is-active', b.getAttribute('data-val') === val);
         });
       });
     });
 
-    /* Bind size dropdown */
-    var ssel = document.getElementById('cpg-size-sel');
-    if (ssel) {
-      ssel.addEventListener('change', function() {
+    var sizeSelect = document.getElementById('cpg-size-sel');
+    if (sizeSelect) {
+      sizeSelect.addEventListener('change', function () {
         selectedOpts[this.getAttribute('data-opt')] = this.value;
       });
     }
 
-    /* Bind variant fallback dropdown */
-    var vsel = document.getElementById('cpg-var-sel');
-    if (vsel) {
-      vsel.addEventListener('change', function() {
+    var variantSelect = document.getElementById('cpg-var-sel');
+    if (variantSelect) {
+      variantSelect.addEventListener('change', function () {
         selectedOpts._variant = this.value;
       });
     }
 
-    /* Add-to-cart */
-    document.getElementById('cpg-atc').addEventListener('click', function() {
-      var vid = resolveVariant(p);
-      if (!vid) {
+    document.getElementById('cpg-atc').addEventListener('click', function () {
+      var variantId = resolveVariant(product);
+      if (!variantId) {
         showToast('Please select your size.');
         return;
       }
-      atc(vid, this);
+      addToCart(variantId, this);
     });
   }
 
-  /* ── Helper: build a swatch group HTML string ── */
-  function buildSwatchBlock(optName, vals, selectFirst) {
+  function buildSwatchBlock(optionName, values, selectFirst) {
     var html = '';
     html += '<div class="cpg-opt">';
-    html += '<span class="cpg-opt__name">' + x(optName) + '</span>';
-    html += '<div class="cpg-swatches" data-opt="' + x(optName) + '">';
-    vals.forEach(function(v, i) {
-      var active = selectFirst && i === 0 ? ' is-active' : '';
-      html += '<button class="cpg-swatch' + active + '" data-opt="' + x(optName) + '" data-val="' + x(v) + '" type="button">' + x(v) + '</button>';
+    html += '<span class="cpg-opt__name">' + escapeHtml(optionName) + '</span>';
+    html += '<div class="cpg-swatches" data-opt="' + escapeHtml(optionName) + '">';
+
+    values.forEach(function (value, index) {
+      var activeClass = (selectFirst && index === 0) ? ' is-active' : '';
+      html += '<button class="cpg-swatch' + activeClass + '" data-opt="' + escapeHtml(optionName) + '" data-val="' + escapeHtml(value) + '" type="button">' + escapeHtml(value) + '</button>';
     });
+
     html += '</div></div>';
-
-    if (selectFirst && vals.length > 0) {
-      selectedOpts[optName] = vals[0];
-    }
-
     return html;
   }
 
-  function resolveVariant(p) {
+  function resolveVariant(product) {
     if (selectedOpts._variant) return selectedOpts._variant;
-    if (p.variants.length === 1) return p.variants[0].id;
+    if (product.variants.length === 1) return product.variants[0].id;
+
+    var optionNames = normalizeOptions(product).map(function (opt) {
+      return opt.name;
+    });
 
     var match = null;
 
-    /* Prefer an available variant */
-    p.variants.forEach(function(v) {
+    product.variants.forEach(function (variant) {
       if (match) return;
-      var ok = p.options.every(function(opt, i) {
-        var chosen = selectedOpts[opt];
+
+      var ok = optionNames.every(function (name, index) {
+        var chosen = selectedOpts[name];
         if (!chosen) return true;
-        return v['option' + (i + 1)] === chosen;
+        return variant['option' + (index + 1)] === chosen;
       });
-      if (ok && v.available) match = v.id;
+
+      if (ok && variant.available) {
+        match = variant.id;
+      }
     });
 
-    /* Fall back to any matching variant */
     if (!match) {
-      p.variants.forEach(function(v) {
+      product.variants.forEach(function (variant) {
         if (match) return;
-        var ok = p.options.every(function(opt, i) {
-          var chosen = selectedOpts[opt];
+
+        var ok = optionNames.every(function (name, index) {
+          var chosen = selectedOpts[name];
           if (!chosen) return true;
-          return v['option' + (i + 1)] === chosen;
+          return variant['option' + (index + 1)] === chosen;
         });
-        if (ok) match = v.id;
+
+        if (ok) {
+          match = variant.id;
+        }
       });
     }
 
     return match;
   }
 
-  function atc(vid, btn) {
-    btn.disabled = true;
-    btn.querySelector('span').textContent = 'Adding\u2026';
+  function addToCart(variantId, button) {
+    button.disabled = true;
+    button.querySelector('span').textContent = 'Adding…';
 
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: parseInt(vid, 10), quantity: 1 })
+      body: JSON.stringify({
+        id: parseInt(variantId, 10),
+        quantity: 1
+      })
     })
-      .then(function(r) {
+      .then(function (r) {
         if (!r.ok) throw r;
         return r.json();
       })
-      .then(function() {
-        btn.querySelector('span').textContent = '\u2713 Added!';
-        showToast('Added to cart \u2713');
-        refreshCount();
+      .then(function () {
+        button.querySelector('span').textContent = '✓ Added!';
+        showToast('Added to cart ✓');
 
-        setTimeout(function() {
-          btn.disabled = false;
-          btn.innerHTML = '<span>ADD TO CART</span><span class="cpg-atc-btn__arrow">&rarr;</span>';
+        setTimeout(function () {
+          button.disabled = false;
+          button.innerHTML = '<span>ADD TO CART</span><span class="cpg-atc-btn__arrow">&rarr;</span>';
         }, 2000);
       })
-      .catch(function() {
-        btn.disabled = false;
-        btn.innerHTML = '<span>ADD TO CART</span><span class="cpg-atc-btn__arrow">&rarr;</span>';
-        showToast('Error \u2014 please try again.');
+      .catch(function () {
+        button.disabled = false;
+        button.innerHTML = '<span>ADD TO CART</span><span class="cpg-atc-btn__arrow">&rarr;</span>';
+        showToast('Error — please try again.');
       });
-  }
-
-  function refreshCount() {
-    fetch('/cart.js')
-      .then(function(r) { return r.json(); })
-      .then(function(c) {
-        document.querySelectorAll('[data-cart-count], .cart-count, .cart__count, .header__cart-count').forEach(function(el) {
-          el.textContent = c.item_count;
-        });
-      })
-      .catch(function() {});
   }
 
   function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function() {
+    toastTimer = setTimeout(function () {
       toast.classList.remove('show');
     }, 2600);
   }
 
-  /* XSS-escape helper */
-  function x(s) {
-    return String(s)
+  function escapeHtml(value) {
+    return String(value)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -832,31 +862,13 @@
     });
   }
 
-  /* Collect unique values for a named option */
-  function optVals(p, optName) {
-    var idx = p.options.indexOf(optName);
-    var seen = {};
-    var vals = [];
-
-    p.variants.forEach(function(v) {
-      var val = v['option' + (idx + 1)];
-      if (val && !seen[val]) {
-        seen[val] = true;
-        vals.push(val);
-      }
-    });
-
-    return vals;
-  }
-
-  /* Delegate click on quick-view buttons */
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     var btn = e.target.closest('.cpg-card__quick-view');
     if (!btn) return;
 
     e.preventDefault();
-    var h = btn.getAttribute('data-product-handle');
-    if (h) load(h);
+    var handle = btn.getAttribute('data-product-handle');
+    if (handle) load(handle);
   });
 })();
 </script>
