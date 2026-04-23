@@ -13,17 +13,11 @@
               {% if product.featured_image %}
                 <img
                   class="cpg-card__image"
-<<<<<<< HEAD
                   src="{{ product.featured_image | image_url: width: 900 }}"
                   alt="{{ product.featured_image.alt | default: product.title | escape }}"
                   loading="lazy"
                   width="600"
                   height="720"
-=======
-                  src="{{ product.featured_image | image_url: width: 700 }}"
-                  alt="{{ product.featured_image.alt | escape }}"
-                  loading="lazy"
->>>>>>> c701291 (Add product grid section)
                 >
               {% else %}
                 {{ 'product-1' | placeholder_svg_tag: 'cpg-placeholder-svg' }}
@@ -33,17 +27,10 @@
                 class="cpg-card__quick-view"
                 data-product-handle="{{ product.handle }}"
                 aria-label="Quick view {{ product.title | escape }}"
-<<<<<<< HEAD
                 type="button"
               >+</button>
-=======
-              >
-                + Quick View
-              </button>
->>>>>>> c701291 (Add product grid section)
             </div>
           </div>
-
         {% else %}
           <div class="cpg-card cpg-card--empty" {{ block.shopify_attributes }}>
             <div class="cpg-card__image-wrap">
@@ -67,26 +54,16 @@
   </div>
 </section>
 
-<<<<<<< HEAD
 <div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" hidden>
-=======
-<div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" aria-label="Quick view" hidden>
->>>>>>> c701291 (Add product grid section)
   <div class="cpg-modal__backdrop" id="cpg-modal-backdrop"></div>
 
   <div class="cpg-modal__panel">
-<<<<<<< HEAD
     <button class="cpg-modal__close" id="cpg-modal-close" aria-label="Close" type="button">&#x2715;</button>
 
     <div id="cpg-modal-body">
       <div class="cpg-loading">
         <div class="cpg-spinner"></div>
       </div>
-=======
-    <button class="cpg-modal__close" id="cpg-modal-close" aria-label="Close">&#x2715;</button>
-    <div class="cpg-modal__body" id="cpg-modal-body">
-      <div class="cpg-modal__loading"><div class="cpg-spinner"></div></div>
->>>>>>> c701291 (Add product grid section)
     </div>
   </div>
 </div>
@@ -94,7 +71,6 @@
 <div class="cpg-toast" id="cpg-toast"></div>
 
 <style>
-<<<<<<< HEAD
 .cpg-section *,
 .cpg-modal * {
   box-sizing: border-box;
@@ -120,73 +96,32 @@
   font-weight: 400;
   color: #1a1a1a;
   margin-bottom: 24px;
-=======
-.cpg-section *, .cpg-modal * { box-sizing: border-box; }
-
-.cpg-section {
-  padding: 48px 0 64px;
-  background: #fff;
-}
-.cpg-container {
-  max-width: 1337px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-.cpg-heading {
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-  font-weight: 500;
-  margin: 0 0 24px;
-  letter-spacing: -0.01em;
-  color: #111;
->>>>>>> c701291 (Add product grid section)
 }
 
 .cpg-grid {
   display: grid;
-<<<<<<< HEAD
   grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: 16px;
   row-gap: 16px;
-=======
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-}
-@media (max-width: 900px) {
-  .cpg-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 540px) {
-  .cpg-grid { grid-template-columns: 1fr; gap: 16px; }
->>>>>>> c701291 (Add product grid section)
 }
 
 .cpg-card {
   position: relative;
   background: transparent;
   overflow: hidden;
-<<<<<<< HEAD
   cursor: pointer;
 }
 
 .cpg-card--empty {
   cursor: default;
 }
-=======
-  background: #f3f3f3;
-}
-.cpg-card--empty { cursor: default; }
->>>>>>> c701291 (Add product grid section)
 
 .cpg-card__image-wrap {
   position: relative;
   width: 100%;
-<<<<<<< HEAD
   aspect-ratio: 0.82;
   overflow: hidden;
   background: #ddd;
-=======
-  aspect-ratio: 1 / 1.07;
-  overflow: hidden;
->>>>>>> c701291 (Add product grid section)
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,7 +132,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-<<<<<<< HEAD
   transition: transform 0.35s ease;
 }
 
@@ -210,13 +144,6 @@
   height: 100%;
   background: #ececec;
 }
-=======
-  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.cpg-card:hover .cpg-card__image { transform: scale(1.05); }
-
-.cpg-placeholder-svg { width: 100%; height: 100%; background: #ececec; }
->>>>>>> c701291 (Add product grid section)
 
 .cpg-card__empty-label {
   position: absolute;
@@ -226,18 +153,13 @@
   font-size: 11px;
   color: #888;
   white-space: nowrap;
-<<<<<<< HEAD
   background: rgba(255,255,255,0.88);
-=======
-  background: rgba(255,255,255,0.85);
->>>>>>> c701291 (Add product grid section)
   padding: 3px 10px;
   border-radius: 2px;
 }
 
 .cpg-card__quick-view {
   position: absolute;
-<<<<<<< HEAD
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
@@ -264,29 +186,6 @@
   color: #fff;
   transform: translateY(-50%) scale(1.06);
 }
-=======
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%) translateY(12px);
-  opacity: 0;
-  white-space: nowrap;
-  padding: 10px 22px;
-  background: rgba(255,255,255,0.96);
-  border: none;
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
-.cpg-card:hover .cpg-card__quick-view {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-.cpg-card__quick-view:hover { background: #fff; }
->>>>>>> c701291 (Add product grid section)
 
 .cpg-modal {
   position: fixed;
@@ -296,7 +195,6 @@
   align-items: center;
   justify-content: center;
 }
-<<<<<<< HEAD
 
 .cpg-modal[hidden] {
   display: none;
@@ -306,20 +204,12 @@
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.34);
-=======
-.cpg-modal[hidden] { display: none; }
-.cpg-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
->>>>>>> c701291 (Add product grid section)
   cursor: pointer;
 }
 
 /* Popup panel */
 .cpg-modal__panel {
   position: relative;
-<<<<<<< HEAD
   z-index: 1;
   width: 311px;
   max-width: 311px;
@@ -339,25 +229,10 @@
     opacity: 1;
     transform: translateY(0);
   }
-=======
-  background: #fff;
-  border-radius: 6px;
-  width: min(860px, 94vw);
-  max-height: 88vh;
-  overflow-y: auto;
-  padding: 36px;
-  z-index: 1;
-  animation: cpgUp 0.28s ease;
-}
-@keyframes cpgUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
->>>>>>> c701291 (Add product grid section)
 }
 
 .cpg-modal__close {
   position: absolute;
-<<<<<<< HEAD
   top: 12px;
   right: 12px;
   background: none;
@@ -528,70 +403,6 @@
   cursor: pointer;
   margin-top: 14px;
   transition: background 0.18s ease;
-=======
-  top: 14px; right: 16px;
-  background: none; border: none;
-  font-size: 18px; cursor: pointer;
-  color: #555; padding: 4px 8px;
-}
-.cpg-modal__close:hover { color: #000; }
-
-.cpg-modal__inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 36px;
-  align-items: start;
-}
-@media (max-width: 600px) {
-  .cpg-modal__inner { grid-template-columns: 1fr; }
-  .cpg-modal__panel { padding: 20px; }
-}
-.cpg-modal__img {
-  width: 100%; aspect-ratio: 3/4;
-  object-fit: cover; border-radius: 3px; display: block;
-}
-.cpg-modal__info { padding-top: 4px; }
-.cpg-modal__title {
-  font-size: 1.35rem; font-weight: 600;
-  margin: 0 0 8px; line-height: 1.3;
-}
-.cpg-modal__price { font-size: 1.05rem; color: #444; margin: 0 0 18px; }
-.cpg-modal__desc {
-  font-size: 13.5px; line-height: 1.7;
-  color: #666; margin: 0 0 22px;
-}
-.cpg-modal__label {
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  margin-bottom: 6px; display: block;
-}
-.cpg-modal__select {
-  width: 100%; padding: 10px 36px 10px 14px;
-  border: 1px solid #ccc; border-radius: 3px;
-  font-size: 14px; margin-bottom: 18px;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;
-  cursor: pointer; appearance: none;
-}
-.cpg-modal__atc {
-  width: 100%; padding: 14px;
-  background: #111; color: #fff;
-  border: none; border-radius: 3px;
-  font-size: 12px; font-weight: 700;
-  letter-spacing: 0.09em; text-transform: uppercase;
-  cursor: pointer; transition: background 0.18s;
-  margin-bottom: 12px;
-}
-.cpg-modal__atc:hover   { background: #333; }
-.cpg-modal__atc:disabled { background: #aaa; cursor: not-allowed; }
-.cpg-modal__view {
-  display: block; text-align: center;
-  font-size: 12.5px; color: #666;
-  text-decoration: underline; text-underline-offset: 2px;
-}
-
-.cpg-modal__loading {
-  display: flex; align-items: center; justify-content: center; min-height: 220px;
->>>>>>> c701291 (Add product grid section)
 }
 
 .cpg-atc-btn:hover {
@@ -617,7 +428,6 @@
 }
 
 .cpg-spinner {
-<<<<<<< HEAD
   width: 30px;
   height: 30px;
   border: 3px solid #eee;
@@ -628,16 +438,9 @@
 
 @keyframes cpgSpin {
   to { transform: rotate(360deg); }
-=======
-  width: 34px; height: 34px;
-  border: 3px solid #e5e5e5; border-top-color: #222;
-  border-radius: 50%; animation: cpgSpin 0.65s linear infinite;
->>>>>>> c701291 (Add product grid section)
 }
-@keyframes cpgSpin { to { transform: rotate(360deg); } }
 
 .cpg-toast {
-<<<<<<< HEAD
   position: fixed;
   left: 50%;
   bottom: 24px;
@@ -718,52 +521,28 @@
     height: 54px;
   }
 }
-=======
-  position: fixed; bottom: 28px;
-  left: 50%; transform: translateX(-50%) translateY(70px);
-  background: #111; color: #fff;
-  padding: 12px 28px; border-radius: 3px;
-  font-size: 13.5px; font-weight: 500;
-  z-index: 99999; transition: transform 0.28s ease;
-  pointer-events: none; white-space: nowrap;
-}
-.cpg-toast.cpg-toast--show { transform: translateX(-50%) translateY(0); }
->>>>>>> c701291 (Add product grid section)
 </style>
 
 <script>
 (function () {
   'use strict';
 
-<<<<<<< HEAD
   var modal = document.getElementById('cpg-modal');
   var body = document.getElementById('cpg-modal-body');
   var closeBtn = document.getElementById('cpg-modal-close');
   var backdrop = document.getElementById('cpg-modal-backdrop');
   var toast = document.getElementById('cpg-toast');
-=======
-  var modal      = document.getElementById('cpg-modal');
-  var modalBody  = document.getElementById('cpg-modal-body');
-  var closeBtn   = document.getElementById('cpg-modal-close');
-  var backdrop   = document.getElementById('cpg-modal-backdrop');
-  var toast      = document.getElementById('cpg-toast');
->>>>>>> c701291 (Add product grid section)
   var toastTimer = null;
   var activeHandle = null;
   var currentProduct = null;
   var selectedOpts = {};
 
-<<<<<<< HEAD
   function open() {
     modal.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
   }
 
   function close() {
-=======
-  function openModal()  { modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden'; }
-  function closeModal() {
->>>>>>> c701291 (Add product grid section)
     modal.setAttribute('hidden', '');
     document.body.style.overflow = '';
     body.innerHTML = '<div class="cpg-loading"><div class="cpg-spinner"></div></div>';
@@ -772,7 +551,6 @@
     selectedOpts = {};
   }
 
-<<<<<<< HEAD
   closeBtn.addEventListener('click', close);
   backdrop.addEventListener('click', close);
   document.addEventListener('keydown', function (e) {
@@ -780,20 +558,12 @@
   });
 
   function load(handle) {
-=======
-  closeBtn.addEventListener('click', closeModal);
-  backdrop.addEventListener('click', closeModal);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
-
-  function loadProduct(handle) {
->>>>>>> c701291 (Add product grid section)
     if (activeHandle === handle) return;
     activeHandle = handle;
     open();
     body.innerHTML = '<div class="cpg-loading"><div class="cpg-spinner"></div></div>';
 
     fetch('/products/' + handle + '.js')
-<<<<<<< HEAD
       .then(function (r) {
         if (!r.ok) throw r.status;
         return r.json();
@@ -1066,88 +836,10 @@
         button.innerHTML = '<span>ADD TO CART</span><span class="cpg-atc-btn__arrow">&rarr;</span>';
         showToast('Error — please try again.');
       });
-=======
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(renderModal)
-      .catch(function () {
-        modalBody.innerHTML = '<p style="padding:32px;text-align:center">Could not load product. <a href="/products/' + handle + '">View page &rarr;</a></p>';
-      });
-  }
-
-  function renderModal(p) {
-    var imgSrc  = p.featured_image || (p.images && p.images[0]);
-    var imgHtml = imgSrc
-      ? '<img class="cpg-modal__img" src="' + imgSrc + '" alt="' + esc(p.title) + '" loading="lazy">'
-      : '<div style="background:#eee;aspect-ratio:3/4;border-radius:3px"></div>';
-
-    var price = fmtMoney(p.price_min);
-    if (p.price_min !== p.price_max) price += ' &ndash; ' + fmtMoney(p.price_max);
-
-    var varOpts = p.variants.map(function (v) {
-      return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>'
-        + esc(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
-    }).join('');
-
-    var varHtml = (p.variants.length > 1 || p.variants[0].title !== 'Default Title')
-      ? '<label class="cpg-modal__label">Options</label><select class="cpg-modal__select" id="cpg-var-sel">' + varOpts + '</select>'
-      : '<input type="hidden" id="cpg-var-sel" value="' + p.variants[0].id + '">';
-
-    var descHtml = p.description
-      ? '<p class="cpg-modal__desc">' + p.description.replace(/<[^>]+>/g, '').substring(0, 280) + (p.description.length > 280 ? '\u2026' : '') + '</p>'
-      : '';
-
-    modalBody.innerHTML =
-      '<div class="cpg-modal__inner">'
-      + '<div>' + imgHtml + '</div>'
-      + '<div class="cpg-modal__info">'
-        + '<h2 class="cpg-modal__title">' + esc(p.title) + '</h2>'
-        + '<p class="cpg-modal__price">' + price + '</p>'
-        + descHtml + varHtml
-        + '<button class="cpg-modal__atc" id="cpg-atc">Add to Cart</button>'
-        + '<a class="cpg-modal__view" href="/products/' + p.handle + '">View full details</a>'
-      + '</div>'
-      + '</div>';
-
-    document.getElementById('cpg-atc').addEventListener('click', function () {
-      var el = document.getElementById('cpg-var-sel');
-      if (el && el.value) addToCart(el.value, this);
-    });
-  }
-
-  function addToCart(variantId, btn) {
-    btn.disabled = true;
-    btn.textContent = 'Adding\u2026';
-    fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: parseInt(variantId, 10), quantity: 1 })
-    })
-    .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
-    .then(function () {
-      btn.textContent = '\u2713 Added!';
-      showToast('Added to cart \u2713');
-      refreshCartCount();
-      setTimeout(function () { btn.disabled = false; btn.textContent = 'Add to Cart'; }, 2200);
-    })
-    .catch(function () {
-      btn.disabled = false;
-      btn.textContent = 'Add to Cart';
-      showToast('Something went wrong \u2014 please try again.');
-    });
-  }
-
-  function refreshCartCount() {
-    fetch('/cart.js').then(function (r) { return r.json(); }).then(function (c) {
-      document.querySelectorAll('[data-cart-count],.cart-count,.cart__count,.header__cart-count,.cart-link__bubble-num').forEach(function (el) {
-        el.textContent = c.item_count;
-      });
-    }).catch(function () {});
->>>>>>> c701291 (Add product grid section)
   }
 
   function showToast(msg) {
     toast.textContent = msg;
-<<<<<<< HEAD
     toast.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
@@ -1168,18 +860,6 @@
       style: 'currency',
       currency: '{{ shop.currency }}'
     });
-=======
-    toast.classList.add('cpg-toast--show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { toast.classList.remove('cpg-toast--show'); }, 2800);
-  }
-
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function fmtMoney(cents) {
-    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: '{{ shop.currency }}' });
->>>>>>> c701291 (Add product grid section)
   }
 
   document.addEventListener('click', function (e) {
@@ -1202,11 +882,7 @@
       "type": "text",
       "id": "heading",
       "label": "Section heading",
-<<<<<<< HEAD
       "default": "Tisso vision in the wild"
-=======
-      "default": "Tisso vison in the wild"
->>>>>>> c701291 (Add product grid section)
     }
   ],
   "blocks": [
