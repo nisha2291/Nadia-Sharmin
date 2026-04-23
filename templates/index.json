@@ -26,12 +26,6 @@
     "grid": {
       "type": "custom-product-grid",
       "blocks": {
-        "product_YXd83d": {
-          "type": "product",
-          "settings": {
-            "product": "dark-denim-top"
-          }
-        },
         "product_wdVtxM": {
           "type": "product",
           "settings": {
@@ -64,7 +58,6 @@
         }
       },
       "block_order": [
-        "product_YXd83d",
         "product_wdVtxM",
         "product_BjGAVg",
         "product_MNHJGJ",
