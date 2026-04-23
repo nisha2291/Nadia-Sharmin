@@ -669,16 +669,18 @@
     /* 3. SIZE LAST AS DROPDOWN */
     if (sizeOpt && sizeOpt.values.length) {
       optsHtml += '<div class="cpg-opt">';
-      optsHtml += '<span class="cpg-opt__name">' + escapeHtml(sizeOpt.name) + '</span>';
-      optsHtml += '<div class="cpg-size-wrap">';
-      optsHtml += '<select class="cpg-size-select" id="cpg-size-sel" data-opt="' + escapeHtml(sizeOpt.name) + '">';
-      optsHtml += '<option value="" disabled selected>Choose your size</option>';
-      sizeOpt.values.forEach(function (value) {
-        optsHtml += '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</option>';
-      });
-      optsHtml += '</select>';
-      optsHtml += '<span class="cpg-size-chevron">&#8964;</span>';
-      optsHtml += '</div></div>';
+optsHtml += '<span class="cpg-opt__name">' + escapeHtml(sizeOpt.name) + '</span>';
+optsHtml += '<div class="cpg-size-wrap">';
+optsHtml += '<button type="button" class="cpg-size-toggle" id="cpg-size-toggle" data-opt="' + escapeHtml(sizeOpt.name) + '">';
+optsHtml += '<span class="cpg-size-toggle__label" id="cpg-size-label">Choose your size</span>';
+optsHtml += '<span class="cpg-size-chevron">&#8964;</span>';
+optsHtml += '</button>';
+optsHtml += '<div class="cpg-size-dropdown" id="cpg-size-dropdown" hidden>';
+sizeOpt.values.forEach(function (value) {
+  optsHtml += '<button type="button" class="cpg-size-option" data-value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</button>';
+});
+optsHtml += '</div>';
+optsHtml += '</div></div>';
     }
 
     var fallbackHtml = '';
