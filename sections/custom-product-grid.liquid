@@ -352,70 +352,37 @@
 .cpg-size-wrap {
   position: relative;
   width: 271px;
-  height:64px;
+  height: 64px;
 }
 
-.cpg-size-toggle {
+.cpg-size-select {
   width: 271px;
   height: 64px;
-  padding: 0 48px 0 18px;
+  padding: 0 48px 0 14px;
   border: 1px solid #a9a9a9;
   background: #fff;
   color: #222;
   font-size: 13px;
-  text-align: left;
+  appearance: none;
+  border-radius: 0;
   cursor: pointer;
-  position: relative;
 }
 
-.cpg-size-toggle__label {
-  pointer-events: none;
+.cpg-size-select:focus {
+  outline: none;
+  border-color: #777;
 }
 
 .cpg-size-chevron {
   position: absolute;
   right: 16px;
   top: 50%;
-  transform: translateY(-50%) rotate(0deg);
-  color: #111;
-  font-size: 18px;
+  transform: translateY(-50%);
+  color: #333;
+  font-size: 15px;
   pointer-events: none;
-  transition: transform 0.2s ease;
 }
 
-.cpg-size-wrap.is-open .cpg-size-chevron {
-  transform: translateY(-50%) rotate(180deg);
-}
-
-.cpg-size-dropdown {
-  width: 271px;
-  border-left: 1px solid #a9a9a9;
-  border-right: 1px solid #a9a9a9;
-  border-bottom: 1px solid #a9a9a9;
-  background: #fff;
-}
-
-.cpg-size-option {
-  width: 100%;
-  height: 38px;
-  border: none;
-  border-top: 1px solid #e5e5e5;
-  background: #fff;
-  color: #111;
-  font-size: 13px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.cpg-size-option:first-child {
-  border-top: none;
-}
-
-.cpg-size-option:hover,
-.cpg-size-option.is-active {
-  background: #000;
-  color: #fff;
-}
 /* Add to cart: 271 x 45 */
 .cpg-atc-btn {
   width: 271px;
