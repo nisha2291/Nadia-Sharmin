@@ -286,25 +286,23 @@
         onload="this.media='all'"
       >
     {%- endif -%}
+{% if template == 'page.candidate-test' or template == 'index' %}
+  <style>
+    #shopify-section-announcement-bar,
+    .announcement-bar,
+    .shopify-section-group-header-group,
+    .shopify-section-group-footer-group,
+    header,
+    footer {
+      display: none !important;
+    }
 
-    {% if template == 'page.candidate-test' %}
-      <style>
-        #shopify-section-announcement-bar,
-        .announcement-bar,
-        .shopify-section-group-header-group,
-        .shopify-section-group-footer-group,
-        header,
-        footer {
-          display: none !important;
-        }
-
-        body.template-page-candidate-test #MainContent,
-        #MainContent {
-          padding-top: 0 !important;
-          margin-top: 0 !important;
-        }
-      </style>
-    {% endif %}
+    #MainContent {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+  </style>
+{% endif %}
 
     <script>
       if (Shopify.designMode) {
@@ -322,17 +320,16 @@
       {%- render 'cart-drawer' -%}
     {%- endif -%}
 
-    {% unless template == 'page.candidate-test' %}
-      {% sections 'header-group' %}
-    {% endunless %}
+  {% unless template == 'page.candidate-test' or template == 'index' %}
+  {% sections 'header-group' %}
+{% endunless %}
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
-
-    {% unless template == 'page.candidate-test' %}
-      {% sections 'footer-group' %}
-    {% endunless %}
+{% unless template == 'page.candidate-test' or template == 'index' %}
+  {% sections 'footer-group' %}
+{% endunless %}
 
     <ul hidden>
       <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
