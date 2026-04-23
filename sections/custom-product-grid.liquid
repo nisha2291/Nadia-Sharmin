@@ -406,7 +406,7 @@
 }
 
 .cpg-atc-btn:hover {
-  background: #1d1d1d;
+  background: #1a1a1a;
 }
 
 .cpg-atc-btn:disabled {
@@ -587,53 +587,47 @@
 
     var price = money(p.price_min);
     if (p.price_min !== p.price_max) {
-      price += ' – ' + money(p.price_max);
+      price += ' \u2013 ' + money(p.price_max);
     }
 
     var desc = p.description
-      ? p.description.replace(/<[^>]+>/g, '').substring(0, 160) + (p.description.length > 160 ? '…' : '')
+      ? p.description.replace(/<[^>]+>/g, '').substring(0, 160) + (p.description.length > 160 ? '\u2026' : '')
       : '';
 
-    var colorOpt = null;
-    var sizeOpt = null;
+    /* ── Separate options: colour first, size last, others in between ── */
+    var colorOpt  = null;
+    var sizeOpt   = null;
     var otherOpts = [];
 
-    if (p.options && !(p.options.length === 1 && p.options[0] === 'Title')) {
+    var hasRealOptions = p.options && !(p.options.length === 1 && p.options[0] === 'Title');
+
+    if (hasRealOptions) {
       p.options.forEach(function(o) {
-        if (/colou?r/i.test(o)) colorOpt = o;
-        else if (/size/i.test(o)) sizeOpt = o;
-        else otherOpts.push(o);
+        /* o is a plain string from the /products/<handle>.js API */
+        if (/colou?r/i.test(o))  colorOpt = o;
+        else if (/size/i.test(o)) sizeOpt  = o;
+        else                      otherOpts.push(o);
       });
     }
 
     var optsHtml = '';
 
+    /* 1. Colour swatches — FIRST */
     if (colorOpt) {
       var colorVals = optVals(p, colorOpt);
       selectedOpts[colorOpt] = colorVals[0];
 
-      optsHtml += '<div class="cpg-opt">';
-      optsHtml += '<span class="cpg-opt__name">' + x(colorOpt) + '</span>';
-      optsHtml += '<div class="cpg-swatches" data-opt="' + x(colorOpt) + '">';
-      colorVals.forEach(function(v, i) {
-        optsHtml += '<button class="cpg-swatch' + (i === 0 ? ' is-active' : '') + '" data-opt="' + x(colorOpt) + '" data-val="' + x(v) + '" type="button">' + x(v) + '</button>';
-      });
-      optsHtml += '</div></div>';
+      optsHtml += buildSwatchBlock(colorOpt, colorVals, true);
     }
 
+    /* 2. Any other non-size, non-colour options */
     otherOpts.forEach(function(optName) {
       var vals = optVals(p, optName);
       selectedOpts[optName] = vals[0];
-
-      optsHtml += '<div class="cpg-opt">';
-      optsHtml += '<span class="cpg-opt__name">' + x(optName) + '</span>';
-      optsHtml += '<div class="cpg-swatches" data-opt="' + x(optName) + '">';
-      vals.forEach(function(v, i) {
-        optsHtml += '<button class="cpg-swatch' + (i === 0 ? ' is-active' : '') + '" data-opt="' + x(optName) + '" data-val="' + x(v) + '" type="button">' + x(v) + '</button>';
-      });
-      optsHtml += '</div></div>';
+      optsHtml += buildSwatchBlock(optName, vals, true);
     });
 
+    /* 3. Size dropdown — LAST */
     if (sizeOpt) {
       var sizeVals = optVals(p, sizeOpt);
 
@@ -650,10 +644,11 @@
       optsHtml += '</div></div>';
     }
 
+    /* Fallback: product has variants but no named option groups */
     var fallbackHtml = '';
     if (!colorOpt && !sizeOpt && otherOpts.length === 0 && p.variants.length > 1) {
       var varOpts = p.variants.map(function(v) {
-        return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>' + x(v.title) + (v.available ? '' : ' — Sold out') + '</option>';
+        return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>' + x(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
       }).join('');
       fallbackHtml = '<div class="cpg-opt"><select class="cpg-size-select" id="cpg-var-sel">' + varOpts + '</select></div>';
       selectedOpts._variant = p.variants[0].id;
@@ -679,6 +674,7 @@
         '<span class="cpg-atc-btn__arrow">&rarr;</span>' +
       '</button>';
 
+    /* Bind swatch clicks */
     body.querySelectorAll('.cpg-swatch').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var opt = this.getAttribute('data-opt');
@@ -691,6 +687,7 @@
       });
     });
 
+    /* Bind size dropdown */
     var ssel = document.getElementById('cpg-size-sel');
     if (ssel) {
       ssel.addEventListener('change', function() {
@@ -698,6 +695,7 @@
       });
     }
 
+    /* Bind variant fallback dropdown */
     var vsel = document.getElementById('cpg-var-sel');
     if (vsel) {
       vsel.addEventListener('change', function() {
@@ -705,6 +703,7 @@
       });
     }
 
+    /* Add-to-cart */
     document.getElementById('cpg-atc').addEventListener('click', function() {
       var vid = resolveVariant(p);
       if (!vid) {
@@ -715,34 +714,51 @@
     });
   }
 
+  /* ── Helper: build a swatch group HTML string ── */
+  function buildSwatchBlock(optName, vals, selectFirst) {
+    var html = '';
+    html += '<div class="cpg-opt">';
+    html += '<span class="cpg-opt__name">' + x(optName) + '</span>';
+    html += '<div class="cpg-swatches" data-opt="' + x(optName) + '">';
+    vals.forEach(function(v, i) {
+      var active = selectFirst && i === 0 ? ' is-active' : '';
+      html += '<button class="cpg-swatch' + active + '" data-opt="' + x(optName) + '" data-val="' + x(v) + '" type="button">' + x(v) + '</button>';
+    });
+    html += '</div></div>';
+
+    if (selectFirst && vals.length > 0) {
+      selectedOpts[optName] = vals[0];
+    }
+
+    return html;
+  }
+
   function resolveVariant(p) {
     if (selectedOpts._variant) return selectedOpts._variant;
     if (p.variants.length === 1) return p.variants[0].id;
 
     var match = null;
 
+    /* Prefer an available variant */
     p.variants.forEach(function(v) {
       if (match) return;
-
       var ok = p.options.every(function(opt, i) {
         var chosen = selectedOpts[opt];
         if (!chosen) return true;
         return v['option' + (i + 1)] === chosen;
       });
-
       if (ok && v.available) match = v.id;
     });
 
+    /* Fall back to any matching variant */
     if (!match) {
       p.variants.forEach(function(v) {
         if (match) return;
-
         var ok = p.options.every(function(opt, i) {
           var chosen = selectedOpts[opt];
           if (!chosen) return true;
           return v['option' + (i + 1)] === chosen;
         });
-
         if (ok) match = v.id;
       });
     }
@@ -752,7 +768,7 @@
 
   function atc(vid, btn) {
     btn.disabled = true;
-    btn.querySelector('span').textContent = 'Adding…';
+    btn.querySelector('span').textContent = 'Adding\u2026';
 
     fetch('/cart/add.js', {
       method: 'POST',
@@ -764,8 +780,8 @@
         return r.json();
       })
       .then(function() {
-        btn.querySelector('span').textContent = '✓ Added!';
-        showToast('Added to cart ✓');
+        btn.querySelector('span').textContent = '\u2713 Added!';
+        showToast('Added to cart \u2713');
         refreshCount();
 
         setTimeout(function() {
@@ -776,7 +792,7 @@
       .catch(function() {
         btn.disabled = false;
         btn.innerHTML = '<span>ADD TO CART</span><span class="cpg-atc-btn__arrow">&rarr;</span>';
-        showToast('Error — please try again.');
+        showToast('Error \u2014 please try again.');
       });
   }
 
@@ -800,6 +816,7 @@
     }, 2600);
   }
 
+  /* XSS-escape helper */
   function x(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -815,6 +832,7 @@
     });
   }
 
+  /* Collect unique values for a named option */
   function optVals(p, optName) {
     var idx = p.options.indexOf(optName);
     var seen = {};
@@ -831,6 +849,7 @@
     return vals;
   }
 
+  /* Delegate click on quick-view buttons */
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('.cpg-card__quick-view');
     if (!btn) return;
