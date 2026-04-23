@@ -1,6 +1,5 @@
 <section class="cpg-section" id="cpg-{{ section.id }}">
   <div class="cpg-container">
-
     {% if section.settings.heading != blank %}
       <h2 class="cpg-heading">{{ section.settings.heading }}</h2>
     {% endif %}
@@ -21,17 +20,13 @@
               {% else %}
                 {{ 'product-1' | placeholder_svg_tag: 'cpg-placeholder-svg' }}
               {% endif %}
-
               <button
                 class="cpg-card__quick-view"
                 data-product-handle="{{ product.handle }}"
                 aria-label="Quick view {{ product.title | escape }}"
-              >
-                + Quick View
-              </button>
+              >+ Quick View</button>
             </div>
           </div>
-
         {% else %}
           <div class="cpg-card cpg-card--empty" {{ block.shopify_attributes }}>
             <div class="cpg-card__image-wrap">
@@ -52,11 +47,11 @@
         {% endfor %}
       {% endif %}
     </div>
-
   </div>
 </section>
 
-<div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" aria-label="Quick view" hidden>
+<!-- ── Quick View Modal ───────────────────────────────────── -->
+<div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" hidden>
   <div class="cpg-modal__backdrop" id="cpg-modal-backdrop"></div>
   <div class="cpg-modal__panel">
     <button class="cpg-modal__close" id="cpg-modal-close" aria-label="Close">&#x2715;</button>
@@ -69,7 +64,8 @@
 <div class="cpg-toast" id="cpg-toast"></div>
 
 <style>
-.cpg-section *, .cpg-modal * { box-sizing: border-box; }
+/* ── Base ────────────────────────────────────────────────── */
+.cpg-section *, .cpg-modal * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .cpg-section {
   padding: 48px 0 64px;
@@ -81,32 +77,29 @@
   padding: 0 20px;
 }
 .cpg-heading {
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
   font-weight: 500;
-  margin: 0 0 24px;
-  letter-spacing: -0.01em;
+  margin-bottom: 24px;
   color: #111;
 }
 
+/* ── Grid ────────────────────────────────────────────────── */
 .cpg-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
 }
-@media (max-width: 900px) {
-  .cpg-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 540px) {
-  .cpg-grid { grid-template-columns: 1fr; gap: 16px; }
-}
+@media (max-width: 900px) { .cpg-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 540px) { .cpg-grid { grid-template-columns: 1fr; gap: 16px; } }
 
+/* ── Card ────────────────────────────────────────────────── */
 .cpg-card {
   position: relative;
   overflow: hidden;
   background: #f3f3f3;
+  cursor: pointer;
 }
 .cpg-card--empty { cursor: default; }
-
 .cpg-card__image-wrap {
   position: relative;
   width: 100%;
@@ -116,165 +109,227 @@
   align-items: center;
   justify-content: center;
 }
-
 .cpg-card__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.5s ease;
 }
 .cpg-card:hover .cpg-card__image { transform: scale(1.05); }
-
 .cpg-placeholder-svg { width: 100%; height: 100%; background: #ececec; }
-
 .cpg-card__empty-label {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
+  position: absolute; bottom: 10px; left: 50%;
   transform: translateX(-50%);
-  font-size: 11px;
-  color: #888;
-  white-space: nowrap;
+  font-size: 11px; color: #888;
   background: rgba(255,255,255,0.85);
-  padding: 3px 10px;
-  border-radius: 2px;
+  padding: 3px 10px; border-radius: 2px; white-space: nowrap;
 }
-
 .cpg-card__quick-view {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
+  position: absolute; bottom: 14px; left: 50%;
   transform: translateX(-50%) translateY(12px);
-  opacity: 0;
-  white-space: nowrap;
+  opacity: 0; white-space: nowrap;
   padding: 10px 22px;
   background: rgba(255,255,255,0.96);
-  border: none;
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  border: none; border-radius: 2px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
   cursor: pointer;
   transition: opacity 0.22s ease, transform 0.22s ease;
 }
 .cpg-card:hover .cpg-card__quick-view {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  opacity: 1; transform: translateX(-50%) translateY(0);
 }
-.cpg-card__quick-view:hover { background: #fff; }
 
+/* ── Modal shell ─────────────────────────────────────────── */
 .cpg-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
 }
 .cpg-modal[hidden] { display: none; }
 .cpg-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  cursor: pointer;
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45); cursor: pointer;
 }
 .cpg-modal__panel {
-  position: relative;
-  background: #fff;
-  border-radius: 6px;
-  width: min(860px, 94vw);
-  max-height: 88vh;
-  overflow-y: auto;
-  padding: 36px;
+  position: relative; background: #fff;
+  width: min(700px, 95vw);
+  max-height: 92vh; overflow-y: auto;
+  padding: 32px 28px 28px;
   z-index: 1;
-  animation: cpgUp 0.28s ease;
+  animation: cpgUp 0.25s ease;
+  border-radius: 2px;
 }
 @keyframes cpgUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .cpg-modal__close {
-  position: absolute;
-  top: 14px; right: 16px;
+  position: absolute; top: 12px; right: 14px;
   background: none; border: none;
-  font-size: 18px; cursor: pointer;
-  color: #555; padding: 4px 8px;
+  font-size: 18px; cursor: pointer; color: #888;
+  padding: 4px 8px; line-height: 1;
 }
 .cpg-modal__close:hover { color: #000; }
 
+/* ── Modal inner layout — matches screenshot ─────────────── */
 .cpg-modal__inner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 36px;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
   align-items: start;
 }
-@media (max-width: 600px) {
+@media (max-width: 540px) {
   .cpg-modal__inner { grid-template-columns: 1fr; }
-  .cpg-modal__panel { padding: 20px; }
 }
+
+/* Left: image */
 .cpg-modal__img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+}
+.cpg-modal__img-placeholder {
   width: 100%; aspect-ratio: 3/4;
-  object-fit: cover; border-radius: 3px; display: block;
+  background: #eee; border-radius: 2px;
 }
-.cpg-modal__info { padding-top: 4px; }
+
+/* Right: info */
+.cpg-modal__info { display: flex; flex-direction: column; gap: 12px; }
+
 .cpg-modal__title {
-  font-size: 1.35rem; font-weight: 600;
-  margin: 0 0 8px; line-height: 1.3;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #111;
+  line-height: 1.3;
 }
-.cpg-modal__price { font-size: 1.05rem; color: #444; margin: 0 0 18px; }
+.cpg-modal__price {
+  font-size: 1.15rem;
+  color: #111;
+  font-weight: 400;
+}
 .cpg-modal__desc {
-  font-size: 13.5px; line-height: 1.7;
-  color: #666; margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #555;
 }
-.cpg-modal__label {
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  margin-bottom: 6px; display: block;
+
+/* Option label */
+.cpg-opt__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
 }
+
+/* Color swatches — horizontal buttons like screenshot */
+.cpg-swatch-group {
+  display: flex;
+  gap: 0;
+  border: 1px solid #ddd;
+}
+.cpg-swatch {
+  flex: 1;
+  padding: 12px 10px;
+  border: none;
+  border-right: 1px solid #ddd;
+  background: #fff;
+  font-size: 13.5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+  position: relative;
+}
+.cpg-swatch:last-child { border-right: none; }
+.cpg-swatch.active {
+  background: #fff;
+  border-bottom: 3px solid #1a56db;
+}
+.cpg-swatch:hover { background: #f7f7f7; }
+
+/* Size dropdown — matches screenshot style */
+.cpg-size-wrap {
+  position: relative;
+}
+.cpg-size-select {
+  width: 100%;
+  padding: 14px 44px 14px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 0;
+}
+.cpg-size-arrow {
+  position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; color: #555;
+  font-size: 14px;
+}
+
+/* Generic select fallback (when no named options) */
 .cpg-modal__select {
-  width: 100%; padding: 10px 36px 10px 14px;
-  border: 1px solid #ccc; border-radius: 3px;
-  font-size: 14px; margin-bottom: 18px;
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  font-size: 14px;
   background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;
-  cursor: pointer; appearance: none;
+  appearance: none; cursor: pointer;
 }
+
+/* ADD TO CART button — matches screenshot */
 .cpg-modal__atc {
-  width: 100%; padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 20px;
   background: #111; color: #fff;
-  border: none; border-radius: 3px;
-  font-size: 12px; font-weight: 700;
-  letter-spacing: 0.09em; text-transform: uppercase;
-  cursor: pointer; transition: background 0.18s;
-  margin-bottom: 12px;
+  border: none;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s;
+  margin-top: 4px;
 }
 .cpg-modal__atc:hover   { background: #333; }
 .cpg-modal__atc:disabled { background: #aaa; cursor: not-allowed; }
+.cpg-modal__atc-arrow {
+  font-size: 18px; font-weight: 300; line-height: 1;
+}
 .cpg-modal__view {
   display: block; text-align: center;
-  font-size: 12.5px; color: #666;
+  font-size: 12px; color: #888;
   text-decoration: underline; text-underline-offset: 2px;
+  margin-top: 8px;
 }
 
+/* Loading */
 .cpg-modal__loading {
-  display: flex; align-items: center; justify-content: center; min-height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 200px;
 }
 .cpg-spinner {
-  width: 34px; height: 34px;
-  border: 3px solid #e5e5e5; border-top-color: #222;
+  width: 32px; height: 32px;
+  border: 3px solid #eee; border-top-color: #222;
   border-radius: 50%; animation: cpgSpin 0.65s linear infinite;
 }
 @keyframes cpgSpin { to { transform: rotate(360deg); } }
 
+/* Toast */
 .cpg-toast {
-  position: fixed; bottom: 28px;
-  left: 50%; transform: translateX(-50%) translateY(70px);
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(70px);
   background: #111; color: #fff;
-  padding: 12px 28px; border-radius: 3px;
-  font-size: 13.5px; font-weight: 500;
-  z-index: 99999; transition: transform 0.28s ease;
-  pointer-events: none; white-space: nowrap;
+  padding: 12px 28px; border-radius: 2px;
+  font-size: 13px; font-weight: 500;
+  z-index: 99999; pointer-events: none;
+  white-space: nowrap;
+  transition: transform 0.28s ease;
 }
 .cpg-toast.cpg-toast--show { transform: translateX(-50%) translateY(0); }
 </style>
@@ -283,26 +338,37 @@
 (function () {
   'use strict';
 
-  var modal      = document.getElementById('cpg-modal');
-  var modalBody  = document.getElementById('cpg-modal-body');
-  var closeBtn   = document.getElementById('cpg-modal-close');
-  var backdrop   = document.getElementById('cpg-modal-backdrop');
-  var toast      = document.getElementById('cpg-toast');
-  var toastTimer = null;
+  var modal        = document.getElementById('cpg-modal');
+  var modalBody    = document.getElementById('cpg-modal-body');
+  var closeBtn     = document.getElementById('cpg-modal-close');
+  var backdrop     = document.getElementById('cpg-modal-backdrop');
+  var toast        = document.getElementById('cpg-toast');
+  var toastTimer   = null;
   var activeHandle = null;
+  var currentProduct = null;
+  var selectedOptions = {};
 
-  function openModal()  { modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden'; }
+  /* ── Modal open / close ──────────────────────────────── */
+  function openModal()  {
+    modal.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+  }
   function closeModal() {
     modal.setAttribute('hidden', '');
     document.body.style.overflow = '';
     modalBody.innerHTML = '<div class="cpg-modal__loading"><div class="cpg-spinner"></div></div>';
     activeHandle = null;
+    currentProduct = null;
+    selectedOptions = {};
   }
 
   closeBtn.addEventListener('click', closeModal);
   backdrop.addEventListener('click', closeModal);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
 
+  /* ── Fetch product ───────────────────────────────────── */
   function loadProduct(handle) {
     if (activeHandle === handle) return;
     activeHandle = handle;
@@ -311,33 +377,32 @@
 
     fetch('/products/' + handle + '.js')
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(renderModal)
+      .then(function (p) {
+        currentProduct = p;
+        renderModal(p);
+      })
       .catch(function () {
         modalBody.innerHTML = '<p style="padding:32px;text-align:center">Could not load product. <a href="/products/' + handle + '">View page &rarr;</a></p>';
       });
   }
 
+  /* ── Render modal matching the screenshot ────────────── */
   function renderModal(p) {
     var imgSrc  = p.featured_image || (p.images && p.images[0]);
     var imgHtml = imgSrc
       ? '<img class="cpg-modal__img" src="' + imgSrc + '" alt="' + esc(p.title) + '" loading="lazy">'
-      : '<div style="background:#eee;aspect-ratio:3/4;border-radius:3px"></div>';
+      : '<div class="cpg-modal__img-placeholder"></div>';
 
     var price = fmtMoney(p.price_min);
     if (p.price_min !== p.price_max) price += ' &ndash; ' + fmtMoney(p.price_max);
 
-    var varOpts = p.variants.map(function (v) {
-      return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>'
-        + esc(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
-    }).join('');
-
-    var varHtml = (p.variants.length > 1 || p.variants[0].title !== 'Default Title')
-      ? '<label class="cpg-modal__label">Options</label><select class="cpg-modal__select" id="cpg-var-sel">' + varOpts + '</select>'
-      : '<input type="hidden" id="cpg-var-sel" value="' + p.variants[0].id + '">';
-
-    var descHtml = p.description
-      ? '<p class="cpg-modal__desc">' + p.description.replace(/<[^>]+>/g, '').substring(0, 280) + (p.description.length > 280 ? '\u2026' : '') + '</p>'
+    var descText = p.description
+      ? p.description.replace(/<[^>]+>/g, '').substring(0, 200) + (p.description.length > 200 ? '\u2026' : '')
       : '';
+    var descHtml = descText ? '<p class="cpg-modal__desc">' + descText + '</p>' : '';
+
+    /* Build option UI */
+    var optionsHtml = buildOptions(p);
 
     modalBody.innerHTML =
       '<div class="cpg-modal__inner">'
@@ -345,21 +410,150 @@
       + '<div class="cpg-modal__info">'
         + '<h2 class="cpg-modal__title">' + esc(p.title) + '</h2>'
         + '<p class="cpg-modal__price">' + price + '</p>'
-        + descHtml + varHtml
-        + '<button class="cpg-modal__atc" id="cpg-atc">Add to Cart</button>'
+        + descHtml
+        + optionsHtml
+        + '<button class="cpg-modal__atc" id="cpg-atc">'
+          + 'ADD TO CART <span class="cpg-modal__atc-arrow">&rarr;</span>'
+          + '</button>'
         + '<a class="cpg-modal__view" href="/products/' + p.handle + '">View full details</a>'
       + '</div>'
       + '</div>';
 
+    /* Bind swatch clicks */
+    modalBody.querySelectorAll('.cpg-swatch').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var optName = this.getAttribute('data-opt');
+        var val     = this.getAttribute('data-val');
+        selectedOptions[optName] = val;
+        /* Update active state within that group */
+        modalBody.querySelectorAll('.cpg-swatch[data-opt="' + optName + '"]').forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-val') === val);
+        });
+      });
+    });
+
+    /* Bind size select */
+    var sizeSelect = modalBody.querySelector('.cpg-size-select');
+    if (sizeSelect) {
+      sizeSelect.addEventListener('change', function () {
+        selectedOptions[this.getAttribute('data-opt')] = this.value;
+      });
+    }
+
+    /* Bind generic select */
+    var genSelect = modalBody.querySelector('.cpg-modal__select');
+    if (genSelect) {
+      genSelect.addEventListener('change', function () {
+        selectedOptions['variant'] = this.value;
+      });
+      /* Pre-select first available */
+      var firstOpt = genSelect.querySelector('option:not([disabled])');
+      if (firstOpt) selectedOptions['variant'] = firstOpt.value;
+    }
+
+    /* Bind ATC */
     document.getElementById('cpg-atc').addEventListener('click', function () {
-      var el = document.getElementById('cpg-var-sel');
-      if (el && el.value) addToCart(el.value, this);
+      var variantId = resolveVariant(p);
+      if (!variantId) {
+        showToast('Please select your options.');
+        return;
+      }
+      addToCart(variantId, this);
     });
   }
 
+  /* ── Build option UI ─────────────────────────────────── */
+  function buildOptions(p) {
+    /* Single variant with default title — no options needed */
+    if (p.variants.length === 1 && p.variants[0].title === 'Default Title') {
+      selectedOptions['variant'] = p.variants[0].id;
+      return '';
+    }
+
+    /* Multiple named options */
+    if (p.options && p.options.length > 0 && p.options[0] !== 'Title') {
+      var html = '';
+      p.options.forEach(function (optName, idx) {
+        var values = getOptionValues(p, idx);
+        var isColor = /colou?r/i.test(optName);
+        var isSize  = /size/i.test(optName);
+
+        html += '<div class="cpg-opt-group" style="display:flex;flex-direction:column;gap:0">';
+        html += '<span class="cpg-opt__label">' + esc(optName) + '</span>';
+
+        if (isColor) {
+          /* Color swatches */
+          html += '<div class="cpg-swatch-group">';
+          values.forEach(function (val, i) {
+            var active = i === 0 ? ' active' : '';
+            if (i === 0) selectedOptions[optName] = val;
+            html += '<button class="cpg-swatch' + active + '" data-opt="' + esc(optName) + '" data-val="' + esc(val) + '">' + esc(val) + '</button>';
+          });
+          html += '</div>';
+        } else if (isSize) {
+          /* Size dropdown */
+          html += '<div class="cpg-size-wrap">';
+          html += '<select class="cpg-size-select" data-opt="' + esc(optName) + '">';
+          html += '<option value="" disabled selected>Choose your ' + esc(optName.toLowerCase()) + '</option>';
+          values.forEach(function (val) {
+            html += '<option value="' + esc(val) + '">' + esc(val) + '</option>';
+          });
+          html += '</select>';
+          html += '<span class="cpg-size-arrow">&#8964;</span>';
+          html += '</div>';
+        } else {
+          /* Generic swatch for other options */
+          html += '<div class="cpg-swatch-group">';
+          values.forEach(function (val, i) {
+            var active = i === 0 ? ' active' : '';
+            if (i === 0) selectedOptions[optName] = val;
+            html += '<button class="cpg-swatch' + active + '" data-opt="' + esc(optName) + '" data-val="' + esc(val) + '">' + esc(val) + '</button>';
+          });
+          html += '</div>';
+        }
+        html += '</div>';
+      });
+      return html;
+
+    } else {
+      /* Fallback: flat variant dropdown */
+      var opts = p.variants.map(function (v) {
+        return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>'
+          + esc(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
+      }).join('');
+      return '<select class="cpg-modal__select">' + opts + '</select>';
+    }
+  }
+
+  function getOptionValues(p, idx) {
+    var seen = {}, vals = [];
+    p.variants.forEach(function (v) {
+      var val = v['option' + (idx + 1)];
+      if (val && !seen[val]) { seen[val] = true; vals.push(val); }
+    });
+    return vals;
+  }
+
+  /* ── Resolve which variant matches selected options ──── */
+  function resolveVariant(p) {
+    /* Direct variant id stored */
+    if (selectedOptions['variant']) return selectedOptions['variant'];
+    if (p.variants.length === 1) return p.variants[0].id;
+
+    /* Match by options */
+    var match = p.variants.find(function (v) {
+      return p.options.every(function (optName, idx) {
+        var chosen = selectedOptions[optName];
+        return !chosen || v['option' + (idx + 1)] === chosen;
+      });
+    });
+    return match ? match.id : (p.variants[0] ? p.variants[0].id : null);
+  }
+
+  /* ── Add to cart ─────────────────────────────────────── */
   function addToCart(variantId, btn) {
     btn.disabled = true;
-    btn.textContent = 'Adding\u2026';
+    btn.innerHTML = 'Adding\u2026';
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -367,18 +561,22 @@
     })
     .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
     .then(function () {
-      btn.textContent = '\u2713 Added!';
+      btn.innerHTML = '\u2713 Added!';
       showToast('Added to cart \u2713');
       refreshCartCount();
-      setTimeout(function () { btn.disabled = false; btn.textContent = 'Add to Cart'; }, 2200);
+      setTimeout(function () {
+        btn.disabled = false;
+        btn.innerHTML = 'ADD TO CART <span class="cpg-modal__atc-arrow">&rarr;</span>';
+      }, 2200);
     })
     .catch(function () {
       btn.disabled = false;
-      btn.textContent = 'Add to Cart';
+      btn.innerHTML = 'ADD TO CART <span class="cpg-modal__atc-arrow">&rarr;</span>';
       showToast('Something went wrong \u2014 please try again.');
     });
   }
 
+  /* ── Refresh cart count in header ────────────────────── */
   function refreshCartCount() {
     fetch('/cart.js').then(function (r) { return r.json(); }).then(function (c) {
       document.querySelectorAll('[data-cart-count],.cart-count,.cart__count,.header__cart-count,.cart-link__bubble-num').forEach(function (el) {
@@ -387,6 +585,7 @@
     }).catch(function () {});
   }
 
+  /* ── Toast ───────────────────────────────────────────── */
   function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add('cpg-toast--show');
@@ -394,6 +593,7 @@
     toastTimer = setTimeout(function () { toast.classList.remove('cpg-toast--show'); }, 2800);
   }
 
+  /* ── Helpers ─────────────────────────────────────────── */
   function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
@@ -401,6 +601,7 @@
     return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: '{{ shop.currency }}' });
   }
 
+  /* ── Delegated click on Quick View ───────────────────── */
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('.cpg-card__quick-view');
     if (!btn) return;
