@@ -15,17 +15,69 @@
         "brand_text": "TISSO VISION",
         "top_message": "Find the ideal gift for your loved ones.",
         "button_label": "CHOOSE GIFT",
+        "button_link": "",
         "heading": "The Gift Guide",
+        "description": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>",
         "cta_label": "SHOP NOW",
+        "cta_link": "",
         "bottom_note": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
       }
     },
     "grid": {
       "type": "custom-product-grid",
+      "blocks": {
+        "product_YXd83d": {
+          "type": "product",
+          "settings": {
+            "product": "dark-denim-top"
+          }
+        },
+        "product_wdVtxM": {
+          "type": "product",
+          "settings": {
+            "product": "black-leather-bag"
+          }
+        },
+        "product_BjGAVg": {
+          "type": "product",
+          "settings": {
+            "product": "classic-leather-jacket"
+          }
+        },
+        "product_MNHJGJ": {
+          "type": "product",
+          "settings": {
+            "product": "classic-varsity-top"
+          }
+        },
+        "product_YLLcDX": {
+          "type": "product",
+          "settings": {
+            "product": "chequered-red-shirt"
+          }
+        },
+        "product_nHC7iz": {
+          "type": "product",
+          "settings": {
+            "product": "blue-silk-tuxedo"
+          }
+        }
+      },
+      "block_order": [
+        "product_YXd83d",
+        "product_wdVtxM",
+        "product_BjGAVg",
+        "product_MNHJGJ",
+        "product_YLLcDX",
+        "product_nHC7iz"
+      ],
       "settings": {
         "heading": "Tisso vision in the wild"
       }
     }
   },
-  "order": ["banner", "grid"]
+  "order": [
+    "banner",
+    "grid"
+  ]
 }
