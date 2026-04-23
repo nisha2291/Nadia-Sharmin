@@ -577,31 +577,33 @@
       });
   }
 
-  function normalizeOptions(product) {
-    var result = [];
+function normalizeOptions(product) {
+  var result = [];
 
-    if (Array.isArray(product.options_with_values) && product.options_with_values.length) {
-      product.options_with_values.forEach(function (opt) {
-        result.push({
-          name: typeof opt.name === 'string' ? opt.name : String(opt.name || ''),
-          values: Array.isArray(opt.values) ? opt.values.map(String) : []
-        });
+  if (Array.isArray(product.options_with_values) && product.options_with_values.length) {
+    product.options_with_values.forEach(function (opt) {
+      result.push({
+        name: typeof opt.name === 'string' ? opt.name : String(opt.name || ''),
+        values: Array.isArray(opt.values) ? opt.values.map(function(v) {
+          return String(v);
+        }) : []
       });
-      return result;
-    }
-
-    if (Array.isArray(product.options) && product.options.length) {
-      product.options.forEach(function (optName, index) {
-        var safeName = typeof optName === 'string' ? optName : String(optName && optName.name ? optName.name : '');
-        result.push({
-          name: safeName,
-          values: collectOptionValues(product, index + 1)
-        });
-      });
-    }
-
+    });
     return result;
   }
+
+  if (Array.isArray(product.options) && product.options.length) {
+    product.options.forEach(function (optName, index) {
+      var safeName = typeof optName === 'string' ? optName : String(optName || '');
+      result.push({
+        name: safeName,
+        values: collectOptionValues(product, index + 1)
+      });
+    });
+  }
+
+  return result;
+}
 
   function collectOptionValues(product, position) {
     var seen = {};
@@ -635,30 +637,31 @@
       ? product.description.replace(/<[^>]+>/g, '').substring(0, 160) + (product.description.length > 160 ? '…' : '')
       : '';
 
-    var normalizedOptions = normalizeOptions(product);
+var normalizedOptions = normalizeOptions(product);
 
-    var colorOpt = null;
-    var sizeOpt = null;
-    var otherOpts = [];
+var colorOpt = null;
+var sizeOpt = null;
+var otherOpts = [];
 
-    normalizedOptions.forEach(function (opt) {
-      if (/colou?r/i.test(opt.name)) {
-        colorOpt = opt;
-      } else if (/size/i.test(opt.name)) {
-        sizeOpt = opt;
-      } else {
-        otherOpts.push(opt);
-      }
-    });
+normalizedOptions.forEach(function (opt) {
+  var optionName = String(opt.name).toLowerCase().trim();
+
+  if (optionName === 'color' || optionName === 'colour') {
+    colorOpt = opt;
+  } else if (optionName === 'size') {
+    sizeOpt = opt;
+  } else {
+    otherOpts.push(opt);
+  }
+});
 
     var optsHtml = '';
 
-    /* 1. COLOR FIRST */
-    if (colorOpt && colorOpt.values.length) {
-      selectedOpts[colorOpt.name] = colorOpt.values[0];
-      optsHtml += buildSwatchBlock(colorOpt.name, colorOpt.values, true);
-    }
-
+  /* 1. COLOR FIRST - fetched from Shopify product options imported by CSV */
+if (colorOpt && colorOpt.values && colorOpt.values.length) {
+  selectedOpts[colorOpt.name] = colorOpt.values[0];
+  optsHtml += buildSwatchBlock(colorOpt.name, colorOpt.values, true);
+}
     /* 2. OTHER NON-SIZE OPTIONS */
     otherOpts.forEach(function (opt) {
       if (!opt.values.length) return;
