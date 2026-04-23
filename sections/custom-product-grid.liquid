@@ -1,5 +1,3 @@
-{{ 'custom-product-grid.css' | asset_url | stylesheet_tag }}
-
 <section class="cpg-section" id="cpg-{{ section.id }}">
   <div class="cpg-container">
 
@@ -12,45 +10,33 @@
         {% assign product = block.settings.product %}
         {% if product != blank %}
           <div class="cpg-card" {{ block.shopify_attributes }}>
-
             <div class="cpg-card__image-wrap">
               {% if product.featured_image %}
                 <img
                   class="cpg-card__image"
-                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  src="{{ product.featured_image | image_url: width: 700 }}"
                   alt="{{ product.featured_image.alt | escape }}"
                   loading="lazy"
-                  width="600"
-                  height="{{ 600 | divided_by: product.featured_image.aspect_ratio | round }}"
                 >
               {% else %}
-                <div class="cpg-card__no-image">{{ 'image' | placeholder_svg_tag: 'cpg-placeholder-svg' }}</div>
+                {{ 'product-1' | placeholder_svg_tag: 'cpg-placeholder-svg' }}
               {% endif %}
 
               <button
                 class="cpg-card__quick-view"
                 data-product-handle="{{ product.handle }}"
-                data-product-url="{{ product.url }}"
                 aria-label="Quick view {{ product.title | escape }}"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                Quick View
+                + Quick View
               </button>
             </div>
-
-            <div class="cpg-card__info">
-              <p class="cpg-card__title">{{ product.title }}</p>
-              <p class="cpg-card__price">{{ product.price | money }}</p>
-            </div>
-
           </div>
+
         {% else %}
           <div class="cpg-card cpg-card--empty" {{ block.shopify_attributes }}>
             <div class="cpg-card__image-wrap">
-              {{ 'product-1' | placeholder_svg_tag: 'cpg-placeholder-svg' }}
-            </div>
-            <div class="cpg-card__info">
-              <p class="cpg-card__title">Select a product</p>
+              {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'cpg-placeholder-svg' }}
+              <span class="cpg-card__empty-label">Select a product in customizer</span>
             </div>
           </div>
         {% endif %}
@@ -62,9 +48,6 @@
             <div class="cpg-card__image-wrap">
               {{ 'product-' | append: i | placeholder_svg_tag: 'cpg-placeholder-svg' }}
             </div>
-            <div class="cpg-card__info">
-              <p class="cpg-card__title">Add a product block</p>
-            </div>
           </div>
         {% endfor %}
       {% endif %}
@@ -73,129 +56,115 @@
   </div>
 </section>
 
-<!-- Quick View Modal -->
 <div class="cpg-modal" id="cpg-modal" role="dialog" aria-modal="true" aria-label="Quick view" hidden>
   <div class="cpg-modal__backdrop" id="cpg-modal-backdrop"></div>
   <div class="cpg-modal__panel">
-    <button class="cpg-modal__close" id="cpg-modal-close" aria-label="Close">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
+    <button class="cpg-modal__close" id="cpg-modal-close" aria-label="Close">&#x2715;</button>
     <div class="cpg-modal__body" id="cpg-modal-body">
-      <div class="cpg-modal__loading">
-        <div class="cpg-spinner"></div>
-      </div>
+      <div class="cpg-modal__loading"><div class="cpg-spinner"></div></div>
     </div>
   </div>
 </div>
 
+<div class="cpg-toast" id="cpg-toast"></div>
+
 <style>
-/* ── Section Layout ────────────────────────────────────────── */
+.cpg-section *, .cpg-modal * { box-sizing: border-box; }
+
 .cpg-section {
-  padding: 60px 0;
+  padding: 48px 0 64px;
+  background: #fff;
 }
 .cpg-container {
-  max-width: 1200px;
+  max-width: 1337px;
   margin: 0 auto;
   padding: 0 20px;
 }
 .cpg-heading {
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-  font-weight: 600;
-  margin-bottom: 32px;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 500;
+  margin: 0 0 24px;
+  letter-spacing: -0.01em;
+  color: #111;
 }
 
-/* ── Grid ──────────────────────────────────────────────────── */
 .cpg-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 30px;
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .cpg-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 480px) {
-  .cpg-grid { grid-template-columns: 1fr; }
+@media (max-width: 540px) {
+  .cpg-grid { grid-template-columns: 1fr; gap: 16px; }
 }
 
-/* ── Card ──────────────────────────────────────────────────── */
 .cpg-card {
   position: relative;
   overflow: hidden;
-  border-radius: 4px;
-  background: #f5f5f5;
-  cursor: pointer;
+  background: #f3f3f3;
 }
-.cpg-card--empty {
-  opacity: 0.5;
-  cursor: default;
-}
+.cpg-card--empty { cursor: default; }
+
 .cpg-card__image-wrap {
   position: relative;
-  aspect-ratio: 4 / 5;
+  width: 100%;
+  aspect-ratio: 1 / 1.07;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .cpg-card__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.cpg-card:hover .cpg-card__image {
-  transform: scale(1.04);
-}
-.cpg-placeholder-svg {
-  width: 100%;
-  height: 100%;
-  background: #e8e8e8;
+.cpg-card:hover .cpg-card__image { transform: scale(1.05); }
+
+.cpg-placeholder-svg { width: 100%; height: 100%; background: #ececec; }
+
+.cpg-card__empty-label {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.85);
+  padding: 3px 10px;
+  border-radius: 2px;
 }
 
-/* ── Quick View Button ─────────────────────────────────────── */
 .cpg-card__quick-view {
   position: absolute;
-  bottom: 12px;
+  bottom: 14px;
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  transform: translateX(-50%) translateY(12px);
   opacity: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  padding: 10px 22px;
+  background: rgba(255,255,255,0.96);
   border: none;
   border-radius: 2px;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  white-space: nowrap;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 .cpg-card:hover .cpg-card__quick-view {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-.cpg-card__quick-view:hover {
-  background: #fff;
-}
+.cpg-card__quick-view:hover { background: #fff; }
 
-/* ── Card Info ─────────────────────────────────────────────── */
-.cpg-card__info {
-  padding: 10px 4px 4px;
-}
-.cpg-card__title {
-  font-size: 14px;
-  margin: 0 0 4px;
-  font-weight: 500;
-}
-.cpg-card__price {
-  font-size: 13px;
-  margin: 0;
-  color: #555;
-}
-
-/* ── Modal ─────────────────────────────────────────────────── */
 .cpg-modal {
   position: fixed;
   inset: 0;
@@ -205,175 +174,124 @@
   justify-content: center;
 }
 .cpg-modal[hidden] { display: none; }
-
 .cpg-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0,0,0,0.5);
   cursor: pointer;
 }
 .cpg-modal__panel {
   position: relative;
   background: #fff;
   border-radius: 6px;
-  width: min(900px, 95vw);
-  max-height: 90vh;
+  width: min(860px, 94vw);
+  max-height: 88vh;
   overflow-y: auto;
-  padding: 32px;
+  padding: 36px;
   z-index: 1;
-  animation: cpg-slide-up 0.3s ease;
+  animation: cpgUp 0.28s ease;
 }
-@keyframes cpg-slide-up {
-  from { opacity: 0; transform: translateY(24px); }
+@keyframes cpgUp {
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .cpg-modal__close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  line-height: 0;
-  color: #333;
+  top: 14px; right: 16px;
+  background: none; border: none;
+  font-size: 18px; cursor: pointer;
+  color: #555; padding: 4px 8px;
 }
 .cpg-modal__close:hover { color: #000; }
 
-/* ── Modal Body Layout ─────────────────────────────────────── */
 .cpg-modal__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  gap: 36px;
+  align-items: start;
 }
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   .cpg-modal__inner { grid-template-columns: 1fr; }
   .cpg-modal__panel { padding: 20px; }
 }
 .cpg-modal__img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 4px;
+  width: 100%; aspect-ratio: 3/4;
+  object-fit: cover; border-radius: 3px; display: block;
 }
-.cpg-modal__product-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 0 0 10px;
+.cpg-modal__info { padding-top: 4px; }
+.cpg-modal__title {
+  font-size: 1.35rem; font-weight: 600;
+  margin: 0 0 8px; line-height: 1.3;
 }
-.cpg-modal__product-price {
-  font-size: 1.1rem;
-  margin: 0 0 16px;
-  color: #444;
+.cpg-modal__price { font-size: 1.05rem; color: #444; margin: 0 0 18px; }
+.cpg-modal__desc {
+  font-size: 13.5px; line-height: 1.7;
+  color: #666; margin: 0 0 22px;
 }
-.cpg-modal__description {
-  font-size: 14px;
-  line-height: 1.65;
-  color: #555;
-  margin: 0 0 20px;
+.cpg-modal__label {
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 6px; display: block;
 }
-
-/* Variant select */
-.cpg-modal__variants {
-  margin-bottom: 20px;
+.cpg-modal__select {
+  width: 100%; padding: 10px 36px 10px 14px;
+  border: 1px solid #ccc; border-radius: 3px;
+  font-size: 14px; margin-bottom: 18px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+  cursor: pointer; appearance: none;
 }
-.cpg-modal__variants label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 6px;
-}
-.cpg-modal__variants select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  font-size: 14px;
-  background: #fff;
-  cursor: pointer;
-}
-
-/* Add to cart button */
 .cpg-modal__atc {
-  width: 100%;
-  padding: 14px;
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 10px;
+  width: 100%; padding: 14px;
+  background: #111; color: #fff;
+  border: none; border-radius: 3px;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.18s;
+  margin-bottom: 12px;
 }
-.cpg-modal__atc:hover { background: #333; }
-.cpg-modal__atc:disabled { background: #999; cursor: not-allowed; }
-
-.cpg-modal__view-link {
-  display: block;
-  text-align: center;
-  font-size: 13px;
-  color: #555;
-  text-decoration: underline;
+.cpg-modal__atc:hover   { background: #333; }
+.cpg-modal__atc:disabled { background: #aaa; cursor: not-allowed; }
+.cpg-modal__view {
+  display: block; text-align: center;
+  font-size: 12.5px; color: #666;
+  text-decoration: underline; text-underline-offset: 2px;
 }
 
-/* Loading */
 .cpg-modal__loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
+  display: flex; align-items: center; justify-content: center; min-height: 220px;
 }
 .cpg-spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid #eee;
-  border-top-color: #333;
-  border-radius: 50%;
-  animation: cpg-spin 0.7s linear infinite;
+  width: 34px; height: 34px;
+  border: 3px solid #e5e5e5; border-top-color: #222;
+  border-radius: 50%; animation: cpgSpin 0.65s linear infinite;
 }
-@keyframes cpg-spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes cpgSpin { to { transform: rotate(360deg); } }
 
-/* ATC feedback */
 .cpg-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: #111;
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 4px;
-  font-size: 14px;
-  z-index: 99999;
-  transition: transform 0.3s ease;
-  pointer-events: none;
+  position: fixed; bottom: 28px;
+  left: 50%; transform: translateX(-50%) translateY(70px);
+  background: #111; color: #fff;
+  padding: 12px 28px; border-radius: 3px;
+  font-size: 13.5px; font-weight: 500;
+  z-index: 99999; transition: transform 0.28s ease;
+  pointer-events: none; white-space: nowrap;
 }
-.cpg-toast.cpg-toast--show {
-  transform: translateX(-50%) translateY(0);
-}
+.cpg-toast.cpg-toast--show { transform: translateX(-50%) translateY(0); }
 </style>
 
 <script>
 (function () {
   'use strict';
 
-  var modal       = document.getElementById('cpg-modal');
-  var modalBody   = document.getElementById('cpg-modal-body');
-  var modalClose  = document.getElementById('cpg-modal-close');
-  var backdrop    = document.getElementById('cpg-modal-backdrop');
+  var modal      = document.getElementById('cpg-modal');
+  var modalBody  = document.getElementById('cpg-modal-body');
+  var closeBtn   = document.getElementById('cpg-modal-close');
+  var backdrop   = document.getElementById('cpg-modal-backdrop');
+  var toast      = document.getElementById('cpg-toast');
+  var toastTimer = null;
   var activeHandle = null;
 
-  /* ── Open / Close ───────────────────────────────────────── */
-  function openModal() {
-    modal.removeAttribute('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-
+  function openModal()  { modal.removeAttribute('hidden'); document.body.style.overflow = 'hidden'; }
   function closeModal() {
     modal.setAttribute('hidden', '');
     document.body.style.overflow = '';
@@ -381,13 +299,10 @@
     activeHandle = null;
   }
 
-  modalClose.addEventListener('click', closeModal);
+  closeBtn.addEventListener('click', closeModal);
   backdrop.addEventListener('click', closeModal);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeModal();
-  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
-  /* ── Fetch product JSON and render modal ────────────────── */
   function loadProduct(handle) {
     if (activeHandle === handle) return;
     activeHandle = handle;
@@ -395,138 +310,97 @@
     modalBody.innerHTML = '<div class="cpg-modal__loading"><div class="cpg-spinner"></div></div>';
 
     fetch('/products/' + handle + '.js')
-      .then(function (r) { return r.json(); })
-      .then(function (product) {
-        renderModal(product);
-      })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(renderModal)
       .catch(function () {
-        modalBody.innerHTML = '<p style="padding:24px">Failed to load product. <a href="/products/' + handle + '">View product page</a></p>';
+        modalBody.innerHTML = '<p style="padding:32px;text-align:center">Could not load product. <a href="/products/' + handle + '">View page &rarr;</a></p>';
       });
   }
 
-  function renderModal(product) {
-    var img = product.featured_image
-      ? product.featured_image
-      : (product.images && product.images[0] ? product.images[0] : null);
+  function renderModal(p) {
+    var imgSrc  = p.featured_image || (p.images && p.images[0]);
+    var imgHtml = imgSrc
+      ? '<img class="cpg-modal__img" src="' + imgSrc + '" alt="' + esc(p.title) + '" loading="lazy">'
+      : '<div style="background:#eee;aspect-ratio:3/4;border-radius:3px"></div>';
 
-    var imgHtml = img
-      ? '<img class="cpg-modal__img" src="' + img + '" alt="' + escapeHtml(product.title) + '" loading="lazy">'
-      : '<div style="background:#eee;aspect-ratio:1;border-radius:4px;"></div>';
+    var price = fmtMoney(p.price_min);
+    if (p.price_min !== p.price_max) price += ' &ndash; ' + fmtMoney(p.price_max);
 
-    var variantOptions = product.variants.map(function (v) {
-      return '<option value="' + v.id + '" ' + (v.available ? '' : 'disabled') + '>' +
-        escapeHtml(v.title) + (v.available ? '' : ' — Sold out') +
-        '</option>';
+    var varOpts = p.variants.map(function (v) {
+      return '<option value="' + v.id + '"' + (v.available ? '' : ' disabled') + '>'
+        + esc(v.title) + (v.available ? '' : ' \u2014 Sold out') + '</option>';
     }).join('');
 
-    var variantSelectHtml = product.variants.length > 1
-      ? '<div class="cpg-modal__variants"><label>Options</label><select id="cpg-variant-select">' + variantOptions + '</select></div>'
-      : '<input type="hidden" id="cpg-variant-select" value="' + product.variants[0].id + '">';
+    var varHtml = (p.variants.length > 1 || p.variants[0].title !== 'Default Title')
+      ? '<label class="cpg-modal__label">Options</label><select class="cpg-modal__select" id="cpg-var-sel">' + varOpts + '</select>'
+      : '<input type="hidden" id="cpg-var-sel" value="' + p.variants[0].id + '">';
 
-    var priceHtml = formatMoney(product.price_min);
-    if (product.price_min !== product.price_max) {
-      priceHtml += ' – ' + formatMoney(product.price_max);
-    }
-
-    var descHtml = product.description
-      ? '<div class="cpg-modal__description">' + product.description.substring(0, 300) + (product.description.length > 300 ? '…' : '') + '</div>'
+    var descHtml = p.description
+      ? '<p class="cpg-modal__desc">' + p.description.replace(/<[^>]+>/g, '').substring(0, 280) + (p.description.length > 280 ? '\u2026' : '') + '</p>'
       : '';
 
     modalBody.innerHTML =
-      '<div class="cpg-modal__inner">' +
-        '<div>' + imgHtml + '</div>' +
-        '<div>' +
-          '<h2 class="cpg-modal__product-title">' + escapeHtml(product.title) + '</h2>' +
-          '<p class="cpg-modal__product-price">' + priceHtml + '</p>' +
-          descHtml +
-          variantSelectHtml +
-          '<button class="cpg-modal__atc" id="cpg-atc-btn">Add to Cart</button>' +
-          '<a class="cpg-modal__view-link" href="/products/' + product.handle + '">View full details</a>' +
-        '</div>' +
-      '</div>';
+      '<div class="cpg-modal__inner">'
+      + '<div>' + imgHtml + '</div>'
+      + '<div class="cpg-modal__info">'
+        + '<h2 class="cpg-modal__title">' + esc(p.title) + '</h2>'
+        + '<p class="cpg-modal__price">' + price + '</p>'
+        + descHtml + varHtml
+        + '<button class="cpg-modal__atc" id="cpg-atc">Add to Cart</button>'
+        + '<a class="cpg-modal__view" href="/products/' + p.handle + '">View full details</a>'
+      + '</div>'
+      + '</div>';
 
-    document.getElementById('cpg-atc-btn').addEventListener('click', function () {
-      var variantEl = document.getElementById('cpg-variant-select');
-      var variantId = variantEl ? variantEl.value : null;
-      if (!variantId) return;
-      addToCart(variantId, this);
+    document.getElementById('cpg-atc').addEventListener('click', function () {
+      var el = document.getElementById('cpg-var-sel');
+      if (el && el.value) addToCart(el.value, this);
     });
   }
 
-  /* ── Add to Cart (Shopify AJAX API) ────────────────────── */
   function addToCart(variantId, btn) {
     btn.disabled = true;
-    btn.textContent = 'Adding…';
-
+    btn.textContent = 'Adding\u2026';
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: variantId, quantity: 1 })
+      body: JSON.stringify({ id: parseInt(variantId, 10), quantity: 1 })
     })
-    .then(function (r) {
-      if (!r.ok) throw new Error('Cart error');
-      return r.json();
-    })
+    .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
     .then(function () {
-      btn.textContent = '✓ Added';
-      showToast('Item added to cart!');
-      updateCartCount();
-      setTimeout(function () {
-        btn.disabled = false;
-        btn.textContent = 'Add to Cart';
-      }, 2000);
+      btn.textContent = '\u2713 Added!';
+      showToast('Added to cart \u2713');
+      refreshCartCount();
+      setTimeout(function () { btn.disabled = false; btn.textContent = 'Add to Cart'; }, 2200);
     })
     .catch(function () {
       btn.disabled = false;
       btn.textContent = 'Add to Cart';
-      showToast('Could not add item. Please try again.');
+      showToast('Something went wrong \u2014 please try again.');
     });
   }
 
-  /* ── Update cart bubble count in header ──────────────────── */
-  function updateCartCount() {
-    fetch('/cart.js')
-      .then(function (r) { return r.json(); })
-      .then(function (cart) {
-        var badges = document.querySelectorAll('[data-cart-count], .cart-count, .cart__count, .header__cart-count');
-        badges.forEach(function (el) { el.textContent = cart.item_count; });
-      })
-      .catch(function () {});
-  }
-
-  /* ── Toast notification ──────────────────────────────────── */
-  function showToast(msg) {
-    var existing = document.querySelector('.cpg-toast');
-    if (existing) existing.remove();
-    var toast = document.createElement('div');
-    toast.className = 'cpg-toast';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        toast.classList.add('cpg-toast--show');
+  function refreshCartCount() {
+    fetch('/cart.js').then(function (r) { return r.json(); }).then(function (c) {
+      document.querySelectorAll('[data-cart-count],.cart-count,.cart__count,.header__cart-count,.cart-link__bubble-num').forEach(function (el) {
+        el.textContent = c.item_count;
       });
-    });
-    setTimeout(function () {
-      toast.classList.remove('cpg-toast--show');
-      setTimeout(function () { toast.remove(); }, 400);
-    }, 3000);
+    }).catch(function () {});
   }
 
-  /* ── Helpers ────────────────────────────────────────────── */
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('cpg-toast--show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('cpg-toast--show'); }, 2800);
   }
 
-  function formatMoney(cents) {
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtMoney(cents) {
     return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: '{{ shop.currency }}' });
   }
 
-  /* ── Bind Quick View buttons ────────────────────────────── */
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('.cpg-card__quick-view');
     if (!btn) return;
@@ -542,13 +416,12 @@
 {
   "name": "Custom Product Grid",
   "tag": "section",
-  "class": "cpg-section-wrapper",
   "settings": [
     {
       "type": "text",
       "id": "heading",
-      "label": "Section Heading",
-      "default": "Tisso vision in the wild"
+      "label": "Section heading",
+      "default": "Tisso vison in the wild"
     }
   ],
   "blocks": [
