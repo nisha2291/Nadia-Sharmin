@@ -187,8 +187,6 @@
   transform: translateY(-50%) scale(1.06);
 }
 
-/* ─── MODAL ─────────────────────────────────────────────────────────────── */
-
 .cpg-modal {
   position: fixed;
   inset: 0;
@@ -209,18 +207,16 @@
   cursor: pointer;
 }
 
-/* ── Panel: exactly 311 × 447 px, white bg, Figma drop-shadow ── */
+/* Popup panel */
 .cpg-modal__panel {
   position: relative;
   z-index: 1;
-  width: 311px;           /* Figma: 311px */
-  max-width: 311px;       /* lock width */
-  height: 447px;          /* Figma: 447px */
-  max-height: 447px;      /* lock height */
-  overflow-y: auto;       /* scroll if content overflows */
-  background: #FFFFFF;    /* Figma: #FFFFFF */
+  width: 311px;
+  max-width: 311px;
+  min-height: 447px;
+  background: #ffffff;
   padding: 20px;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20); /* Figma: x0 y2 blur4 spread0 #000 20% */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.20);
   animation: cpgUp 0.22s ease;
 }
 
@@ -238,88 +234,97 @@
 .cpg-modal__close {
   position: absolute;
   top: 12px;
-  right: 14px;
+  right: 12px;
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   color: #111;
   cursor: pointer;
-  padding: 2px;
+  padding: 0;
 }
 
 .cpg-modal__close:hover {
   opacity: 0.7;
 }
 
-/* ─── MODAL BODY CONTENT ─────────────────────────────────────────────────── */
-
+/* Top block */
 .cpg-card-top {
-  display: grid;
-  grid-template-columns: 112px 1fr;
-  gap: 14px;
-  align-items: start;
-  margin-bottom: 18px;
+  position: relative;
+  min-height: 140px;
+  margin-bottom: 10px;
 }
 
 .cpg-card-top__img,
 .cpg-card-top__img-placeholder {
-  width: 112px;
-  height: 112px;
+  position: absolute;
+  top: 16px;
+  left: 0;
+  width: 120px;
+  height: 140px;
   object-fit: cover;
   display: block;
   background: #e9e9e9;
 }
 
 .cpg-card-top__info {
+  margin-left: 136px;
+  padding-top: 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .cpg-card-top__title {
-  font-size: 18px;
-  line-height: 1.15;
+  font-size: 14px;
+  line-height: 1.2;
   font-weight: 400;
   color: #1a1a1a;
 }
 
 .cpg-card-top__price {
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.2;
   color: #111;
   font-weight: 400;
+  margin-top: 8px;
 }
 
 .cpg-card-top__desc {
-  font-size: 13px;
-  line-height: 1.35;
+  font-size: 10px;
+  line-height: 1.4;
   color: #444;
-  margin-top: 2px;
+  margin-top: 4px;
+  max-width: 134px;
 }
 
+/* Option blocks */
 .cpg-opt {
-  margin-bottom: 16px;
+  width: 271px;
+  margin-left: 0;
+  margin-bottom: 10px;
 }
 
 .cpg-opt__name {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.2;
   font-weight: 400;
   color: #222;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
+/* Color row: 271 x 64.48 */
 .cpg-swatches {
   display: flex;
-  width: 100%;
+  width: 271px;
+  height: 64.48px;
 }
 
 .cpg-swatch {
   flex: 1;
-  min-height: 46px;
-  padding: 0 12px;
+  height: 64.48px;
+  padding: 0 14px;
   border: 1px solid #a9a9a9;
   border-right: none;
   background: #fff;
@@ -343,13 +348,16 @@
   background: #f8f8f8;
 }
 
+/* Size row: 271 x 64 */
 .cpg-size-wrap {
   position: relative;
+  width: 271px;
+  height: 64px;
 }
 
 .cpg-size-select {
-  width: 100%;
-  min-height: 46px;
+  width: 271px;
+  height: 64px;
   padding: 0 48px 0 14px;
   border: 1px solid #a9a9a9;
   background: #fff;
@@ -375,9 +383,11 @@
   pointer-events: none;
 }
 
+/* Add to cart: 271 x 45 */
 .cpg-atc-btn {
-  width: 100%;
-  min-height: 56px;
+  width: 271px;
+  height: 45px;
+  min-height: 45px;
   padding: 0 18px;
   border: none;
   background: #000;
@@ -386,12 +396,12 @@
   align-items: center;
   justify-content: center;
   gap: 28px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
-  margin-top: 18px;
+  margin-top: 14px;
   transition: background 0.18s ease;
 }
 
@@ -405,7 +415,7 @@
 }
 
 .cpg-atc-btn__arrow {
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   font-weight: 300;
 }
@@ -430,8 +440,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* ─── TOAST ──────────────────────────────────────────────────────────────── */
-
 .cpg-toast {
   position: fixed;
   left: 50%;
@@ -451,8 +459,6 @@
 .cpg-toast.show {
   transform: translateX(-50%) translateY(0);
 }
-
-/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
   .cpg-container {
@@ -477,20 +483,42 @@
     row-gap: 12px;
   }
 
-  /* On very small screens allow modal to breathe a little */
   .cpg-modal__panel {
     width: 94vw;
     max-width: 94vw;
+    min-height: auto;
+    padding: 16px;
   }
 
   .cpg-card-top {
-    grid-template-columns: 88px 1fr;
+    min-height: 120px;
   }
 
   .cpg-card-top__img,
   .cpg-card-top__img-placeholder {
     width: 88px;
-    height: 88px;
+    height: 104px;
+  }
+
+  .cpg-card-top__info {
+    margin-left: 100px;
+  }
+
+  .cpg-opt,
+  .cpg-swatches,
+  .cpg-size-wrap,
+  .cpg-size-select,
+  .cpg-atc-btn {
+    width: 100%;
+  }
+
+  .cpg-swatch {
+    height: 54px;
+  }
+
+  .cpg-size-wrap,
+  .cpg-size-select {
+    height: 54px;
   }
 }
 </style>
